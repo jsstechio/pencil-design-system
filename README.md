@@ -12,25 +12,45 @@ Generate a complete, production-ready design system in a Pencil `.pen` file. In 
 - Optionally builds domain-specific screens (login, dashboard, menu, etc.)
 - Optionally exports to production-ready Tailwind CSS + React (v3 or v4, Next.js or Vite)
 
-## Install (Claude Code)
+## Install
+
+### Claude Code
 
 ```bash
 npx skills add jsstechio/pencil-design-system-skill
 ```
 
-### Manual install
-
-Copy the `skills/` directory into your project's `.claude/skills/` folder:
+Or manually copy the `skills/` directory:
 
 ```bash
 git clone https://github.com/jsstechio/pencil-design-system-skill.git
 cp -r pencil-design-system-skill/skills/ .claude/skills/
 ```
 
+### Google Antigravity
+
+Copy the `agent/` directory into your project root as `.agent/`, plus the reference files:
+
+```bash
+git clone https://github.com/jsstechio/pencil-design-system-skill.git
+cp -r pencil-design-system-skill/agent/ .agent/
+cp -r pencil-design-system-skill/skills/references/ .agent/skills/pds/references/
+```
+
+This installs both:
+- **`/pds` workflow** (slash command) in `.agent/workflows/`
+- **Auto-detected skill** in `.agent/skills/pds/`
+
+Then type `/pds coffee shop` in the Antigravity chat.
+
+### Other editors (Cursor, Windsurf, Cline)
+
+No slash command — use the [step-by-step prompts](#step-by-step-workflow) below. Just connect the Pencil MCP server and paste prompts one at a time.
+
 ## Requirements
 
 - [Pencil](https://pencil.js.org/) MCP server connected to your AI coding assistant
-- Claude Code, Cursor, Windsurf, Google Antigravity, Cline, or any MCP-compatible editor
+- Claude Code, Google Antigravity, Cursor, Windsurf, Cline, or any MCP-compatible editor
 
 ## Usage (Claude Code)
 
@@ -130,6 +150,8 @@ If you need manual MCP config, click **Manage MCP Servers > View raw config** (`
 ```
 
 **Note:** For HTTP-based MCP servers, Antigravity uses `serverUrl` (not `url`).
+
+**`/pds` support:** If you installed the `agent/` directory (see [Install](#google-antigravity)), type `/pds coffee shop` in the chat to run the full workflow with review gates.
 </details>
 
 <details>

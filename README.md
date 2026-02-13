@@ -566,6 +566,139 @@ Write all files to the project directory.
 - **Cline users** — set network timeout to 5 min, pre-approve Pencil tools via `alwaysAllow`
 - **Antigravity users** — install the Pencil extension from the Extensions panel, same as VS Code
 
+---
+
+## Example: Building a coffee shop design system
+
+Here's what a real workflow looks like in **Cursor** (works the same in Windsurf, Antigravity, Cline, or Claude Code).
+
+### 1. Paste Step 1 (replace `[YOUR DOMAIN]` with "coffee shop")
+
+**You paste:**
+```
+You are building a design system for a coffee shop in a Pencil .pen file.
+
+1. Call get_editor_state({ include_schema: true }). If no document is active,
+   call open_document("new").
+2. Call get_guidelines("design-system").
+3. Call get_style_guide_tags(), then get_style_guide with 5-10 tags matching
+   coffee shop.
+4. Search the web for design conventions for coffee shops:
+   - Color palettes used by real coffee shop websites
+   - Font pairings (search "coffee shop website fonts 2026")
+   - UI tone and density
+5. Compile a design brief listing: primary color, secondary color, accent color,
+   background color, heading font, body font, and overall tone.
+
+STOP HERE. Show me the design brief. Do NOT proceed to tokens.
+```
+
+**AI responds with something like:**
+```
+Design Brief — Coffee Shop
+
+Primary:    #3E2723 (rich espresso brown)
+Secondary:  #EFEBE9 (warm cream)
+Accent:     #E65100 (burnt orange)
+Background: #F5F0EB (warm linen)
+Heading:    DM Serif Display
+Body:       Inter
+Tone:       Warm, artisanal, inviting
+```
+
+**You review:** Looks good? Type `c` or paste Step 2. Want different colors? Tell the AI "use teal instead of brown" and it redoes.
+
+### 2. Paste Step 2 (tokens)
+
+Just paste the Step 2 prompt as-is. AI creates ~64 tokens, reports back:
+
+```
+✓ Created 64 tokens:
+  - 19 core colors (light + dark)
+  - 8 semantic colors
+  - 3 fonts (DM Serif Display, Inter, JetBrains Mono)
+  - 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights
+  All color tokens verified: 2 values each (light + dark themes)
+```
+
+### 3. Paste Step 3 (foundations)
+
+AI builds the visual documentation. Shows you a screenshot of color swatches, typography specimens, spacing scale, elevation cards, and border radius showcase — all using your coffee shop tokens.
+
+### 4. Paste Step 4 (components)
+
+AI builds ~25 components in batches, verifying after each. Reports:
+
+```
+✓ 25 reusable components created:
+  - Buttons: Primary, Secondary, Outline, Ghost, Destructive
+  - Inputs: TextField, Textarea, Select, InputGroup
+  - Typography: H1, H2, H3, Body, Caption, Label
+  - Badges: Default, Success, Warning, Error
+  - Alerts: Info, Success, Warning, Error
+  - Card, Sidebar Nav (4), Table (3), Tabs (3)
+  - Breadcrumbs (3), Pagination (4), Modal, Dropdown (4)
+  - Avatar, Divider, Switch, Checkbox, Radio
+```
+
+### 5. Paste Step 5 (patterns)
+
+AI creates 4 composition showcases using your components.
+
+### 6. (Optional) Paste Step 6 for generic screens
+
+Swap `[YOUR DOMAIN]` with "coffee shop" — AI creates Landing, Menu, Item Detail, Cart, About screens.
+
+### 7. (Optional) Paste Step 7 with YOUR business logic
+
+This is where it gets powerful. Paste your actual requirements:
+
+```
+Read the .pen file with get_editor_state. Read components with
+batch_get({ patterns: [{ reusable: true }], readDepth: 2 }) and tokens with
+get_variables.
+
+Based on the following business requirements, plan and build the screens needed.
+Map each user flow or feature to a screen. Use existing reusable components via
+refs. Use batch_design with max 25 operations per call.
+
+For each screen:
+1. find_empty_space_on_canvas(...)
+2. Insert screen frame, build layout with component refs
+3. Add realistic content matching the business requirements
+4. get_screenshot to verify
+
+MY REQUIREMENTS:
+- Online ordering flow: Menu browse → Item customization (size, milk, extras) →
+  Cart review → Checkout with pickup time selector
+- Loyalty program dashboard: Points balance, reward tiers, transaction history,
+  redeem rewards
+- Barista admin panel: Order queue with status (new/preparing/ready), daily
+  sales stats, inventory alerts
+
+STOP HERE. Show me each screen with a description of how it maps to my
+requirements. Do NOT proceed.
+```
+
+The AI designs screens specifically for **your** ordering flow, loyalty program, and admin panel — using the coffee shop design system components it already built.
+
+### 8. Paste Step 8 (verify + fix)
+
+Final cleanup pass. AI fixes layout issues, replaces any leaked hex colors, confirms everything is clean.
+
+### Result
+
+You now have a complete `.pen` file with:
+- 64 themed tokens (light + dark)
+- Visual documentation (foundations)
+- 25 reusable components
+- 4 composition patterns
+- Domain screens + your custom business logic screens
+
+All version-controlled in Git. Export to Tailwind + React with the bonus code export step.
+
+---
+
 ## What's included
 
 | File | Purpose |

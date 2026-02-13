@@ -83,6 +83,8 @@ Call `set_variables` to create the full token system (~60 tokens). Every color, 
 
 Set up theme axis `{ "mode": ["light", "dark"] }`. All token values are domain-tailored. See `references/design-tokens-reference.md` for full JSON payloads.
 
+**Post-creation verification:** After calling `set_variables`, immediately call `get_variables` and verify that every color token's values show `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}` (not `"theme":{}`). If theme mappings are missing, the `set_variables` call used the wrong format — see the CRITICAL warning in `design-tokens-reference.md`.
+
 ### Phase 4 — Build Foundations (Visual Documentation)
 
 Create the Foundations section frame at the left of the canvas. Inside it, build 5 visual documentation frames:
@@ -111,7 +113,12 @@ Create the Components section frame to the right of Foundations with `fill: "#FF
 | 4 | Badges | Default, Success, Warning, Error | 4 |
 | 5 | Alerts | Info, Success, Warning, Error | 4 |
 
-Every component has `reusable: true`, uses only `$--` tokens, and follows `"Category/Variant"` naming. After each batch, call `get_screenshot` to verify. See `references/component-specs.md`.
+Every component has `reusable: true`, uses only `$--` tokens, and follows `"Category/Variant"` naming. See `references/component-specs.md`.
+
+**MANDATORY — Post-Batch Validation (after EVERY batch_design call):**
+1. Check the batch response for "unknown properties were ignored" warnings — fix immediately.
+2. Call `get_screenshot` on the affected section — visually confirm no overlapping elements, no invisible shadows, no broken layouts.
+3. If ANY horizontal arrangement shows items stacked/overlapping, the frame is missing `layout: "horizontal"`. Fix it before proceeding to the next batch.
 
 ### Phase 6 — Build Composite Components (~10 Composites)
 
@@ -140,7 +147,7 @@ Create the Patterns section frame to the right of Components. Build 4 compositio
 3. **Navigation Pattern** — Sidebar ref + Breadcrumbs ref + Tabs ref.
 4. **Card Layout Pattern** — Grid of populated Card refs with images and domain content.
 
-Each pattern uses only `ref` instances + `$--` tokens. After all patterns, call `get_screenshot`. See `references/screen-patterns.md`.
+Each pattern uses only `ref` instances + `$--` tokens. **After each pattern, run the Post-Batch Validation** (screenshot + check for overlapping/broken layouts). See `references/screen-patterns.md`.
 
 ### Phase 8 — Create Domain Screens *(only if user requests)*
 
@@ -157,7 +164,35 @@ If the user requests screens, build 3–5 placed to the right of the Patterns se
 
 See `references/screen-patterns.md` for domain-specific screen templates.
 
-### Phase 9 — Final Verification
+### Phase 9 — Layout Enforcement Pass (MANDATORY)
+
+**Why this exists:** The AI consistently drops `layout: "horizontal"` from frames during generation, even when specs include it. This pass programmatically catches and fixes every missing layout. **This phase is NOT optional — skip it and the design will have broken layouts.**
+
+**Step 1 — Collect all frames with flex properties.**
+```
+batch_get({ filePath, patterns: [{ type: "frame" }], searchDepth: 10, readDepth: 0 })
+```
+Search within EACH top-level section (Foundations, Components, Patterns, and any screens).
+
+**Step 2 — Identify frames needing layout enforcement.**
+From the results, find every frame that has ANY of: `gap`, `alignItems`, `justifyContent` — regardless of whether `layout` already appears (since `batch_get` doesn't display `layout: "horizontal"` in its output — it's considered the default).
+
+**Step 3 — Bulk-apply `layout: "horizontal"` to ALL identified frames.**
+```javascript
+U("frameId1", { layout: "horizontal" })
+U("frameId2", { layout: "horizontal" })
+// ... for every frame with gap/alignItems/justifyContent
+```
+Exclude frames that should be vertical (identifiable by name: category sections, form containers, vertical stacks). Apply `layout: "vertical"` to those instead.
+
+**Step 4 — Verify shadows use hex colors.**
+Check any frame with `effect` property. If `color` uses `rgba()` format, replace with 8-digit hex `#RRGGBBAA`.
+
+**Step 5 — Screenshot every section** to confirm no overlapping elements.
+
+This is safe to run multiple times — setting `layout: "horizontal"` on a frame that already has it is a no-op.
+
+### Phase 10 — Final Verification
 
 Run comprehensive QA. Fix every issue before presenting to the user.
 
@@ -171,7 +206,7 @@ Run comprehensive QA. Fix every issue before presenting to the user.
 
 See `references/verification-checklist.md`.
 
-### Phase 10 — Canvas Navigation Index
+### Phase 11 — Canvas Navigation Index
 
 Create a small navigation index frame at the canvas origin (x: 0, y: 0) showing a map of all sections with their positions:
 
@@ -185,7 +220,7 @@ Design System Index
 
 This helps users navigate the canvas. Only include the Screens entry if Phase 8 was executed.
 
-### Phase 11 — Code Export *(optional, user-triggered)*
+### Phase 12 — Code Export *(optional, user-triggered)*
 
 **Skip this phase unless the user explicitly requests code export** (e.g., "export to Tailwind", "convert to code", "generate React components", "export as CSS"). This phase converts the design system into production-ready Tailwind CSS + React components.
 

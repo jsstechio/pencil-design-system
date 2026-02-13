@@ -2,6 +2,16 @@
 
 Exact `batch_design` operation code for all ~25 reusable components. Load this file during Phases 5 and 6.
 
+## CRITICAL — Mandatory Property Rules
+
+> **These rules address the #1 cause of visual bugs. Violating them produces broken layouts and invisible effects.**
+
+1. **EVERY frame with `gap`, `alignItems`, or `justifyContent` MUST have an explicit `layout: "horizontal"` or `layout: "vertical"`.** Without `layout`, these properties are SILENTLY IGNORED and children are absolutely positioned (overlapping at 0,0). This applies to: component root frames, display rows, screen sections, nav bars, button groups, card grids, form rows — ALL frames.
+
+2. **Shadow `effect` colors MUST use 8-digit hex (`#RRGGBBAA`), NOT `rgba()`.** The `rgba()` format is silently accepted but produces NO visible shadow. Use: 5%→`#0000000D`, 7%→`#00000012`, 10%→`#0000001A`, 15%→`#00000026`, 20%→`#00000033`.
+
+3. **After EVERY `batch_design` call, verify:** scan the response for "unknown properties" warnings, then spot-check with `get_screenshot` that layouts render correctly (no overlapping, no invisible shadows).
+
 ## Important Notes
 
 - Every component root frame must have `reusable: true`.
@@ -48,35 +58,35 @@ buttonsRow=I(buttonsCategory, { type: "frame", layout: "horizontal", gap: 16, wi
 ### Button/Primary
 
 ```javascript
-btnPrimary=I(buttonsRow, { type: "frame", name: "Button/Primary", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+btnPrimary=I(buttonsRow, { type: "frame", name: "Button/Primary", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
 btnPrimaryLabel=I(btnPrimary, { type: "text", name: "Label", content: "Button", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--primary-foreground", textAlignHorizontal: "center" })
 ```
 
 ### Button/Secondary
 
 ```javascript
-btnSecondary=I(buttonsRow, { type: "frame", name: "Button/Secondary", reusable: true, layout: "horizontal", fill: "$--secondary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+btnSecondary=I(buttonsRow, { type: "frame", name: "Button/Secondary", reusable: true, layout: "horizontal", fill: "$--secondary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
 btnSecLabel=I(btnSecondary, { type: "text", name: "Label", content: "Button", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--secondary-foreground", textAlignHorizontal: "center" })
 ```
 
 ### Button/Outline
 
 ```javascript
-btnOutline=I(buttonsRow, { type: "frame", name: "Button/Outline", reusable: true, layout: "horizontal", fill: "transparent", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+btnOutline=I(buttonsRow, { type: "frame", name: "Button/Outline", reusable: true, layout: "horizontal", fill: "transparent", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
 btnOutLabel=I(btnOutline, { type: "text", name: "Label", content: "Button", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--foreground", textAlignHorizontal: "center" })
 ```
 
 ### Button/Ghost
 
 ```javascript
-btnGhost=I(buttonsRow, { type: "frame", name: "Button/Ghost", reusable: true, layout: "horizontal", fill: "transparent", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+btnGhost=I(buttonsRow, { type: "frame", name: "Button/Ghost", reusable: true, layout: "horizontal", fill: "transparent", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
 btnGhostLabel=I(btnGhost, { type: "text", name: "Label", content: "Button", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--foreground", textAlignHorizontal: "center" })
 ```
 
 ### Button/Destructive
 
 ```javascript
-btnDestructive=I(buttonsRow, { type: "frame", name: "Button/Destructive", reusable: true, layout: "horizontal", fill: "$--destructive", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+btnDestructive=I(buttonsRow, { type: "frame", name: "Button/Destructive", reusable: true, layout: "horizontal", fill: "$--destructive", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
 btnDestLabel=I(btnDestructive, { type: "text", name: "Label", content: "Delete", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--destructive-foreground", textAlignHorizontal: "center" })
 ```
 
@@ -109,7 +119,7 @@ textareaPlaceholder=I(inputTextarea, { type: "text", name: "Placeholder", conten
 ### Input/Select
 
 ```javascript
-inputSelect=I(inputsRow, { type: "frame", name: "Input/Select", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--input", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [10, 14, 10, 14], width: 280, height: "hug_contents", alignItems: "center", mainAxisAlignment: "space_between" })
+inputSelect=I(inputsRow, { type: "frame", name: "Input/Select", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--input", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [10, 14, 10, 14], width: 280, height: "hug_contents", alignItems: "center", justifyContent: "space_between" })
 selectValue=I(inputSelect, { type: "text", name: "Value", content: "Select option...", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--muted-foreground", width: "fill_container" })
 selectChevron=I(inputSelect, { type: "text", name: "Chevron", content: "\u25BC", fontSize: 10, fill: "$--muted-foreground" })
 ```
@@ -192,28 +202,28 @@ badgesRow=I(badgesCategory, { type: "frame", layout: "horizontal", gap: 12, widt
 ### Badge/Default
 
 ```javascript
-badgeDefault=I(badgesRow, { type: "frame", name: "Badge/Default", reusable: true, layout: "horizontal", fill: "$--secondary", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", mainAxisAlignment: "center" })
+badgeDefault=I(badgesRow, { type: "frame", name: "Badge/Default", reusable: true, layout: "horizontal", fill: "$--secondary", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", justifyContent: "center" })
 badgeDefaultText=I(badgeDefault, { type: "text", name: "Label", content: "Badge", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "500", fill: "$--secondary-foreground" })
 ```
 
 ### Badge/Success
 
 ```javascript
-badgeSuccess=I(badgesRow, { type: "frame", name: "Badge/Success", reusable: true, layout: "horizontal", fill: "$--color-success", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", mainAxisAlignment: "center" })
+badgeSuccess=I(badgesRow, { type: "frame", name: "Badge/Success", reusable: true, layout: "horizontal", fill: "$--color-success", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", justifyContent: "center" })
 badgeSuccessText=I(badgeSuccess, { type: "text", name: "Label", content: "Success", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "500", fill: "$--color-success-foreground" })
 ```
 
 ### Badge/Warning
 
 ```javascript
-badgeWarning=I(badgesRow, { type: "frame", name: "Badge/Warning", reusable: true, layout: "horizontal", fill: "$--color-warning", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", mainAxisAlignment: "center" })
+badgeWarning=I(badgesRow, { type: "frame", name: "Badge/Warning", reusable: true, layout: "horizontal", fill: "$--color-warning", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", justifyContent: "center" })
 badgeWarningText=I(badgeWarning, { type: "text", name: "Label", content: "Warning", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "500", fill: "$--color-warning-foreground" })
 ```
 
 ### Badge/Error
 
 ```javascript
-badgeError=I(badgesRow, { type: "frame", name: "Badge/Error", reusable: true, layout: "horizontal", fill: "$--color-error", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", mainAxisAlignment: "center" })
+badgeError=I(badgesRow, { type: "frame", name: "Badge/Error", reusable: true, layout: "horizontal", fill: "$--color-error", cornerRadius: "$--radius-pill", padding: [4, 12, 4, 12], width: "hug_contents", height: "hug_contents", justifyContent: "center" })
 badgeErrorText=I(badgeError, { type: "text", name: "Label", content: "Error", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "500", fill: "$--color-error-foreground" })
 ```
 
@@ -281,7 +291,7 @@ cardHeader=I(card, { type: "frame", name: "Header", layout: "vertical", padding:
 cardTitle=I(cardHeader, { type: "text", name: "Title", content: "Card Title", fontFamily: "$--font-primary", fontSize: "$--text-lg", fontWeight: "600", fill: "$--card-foreground", width: "fill_container" })
 cardDesc=I(cardHeader, { type: "text", name: "Description", content: "Card description text goes here.", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--muted-foreground", width: "fill_container" })
 cardContent=I(card, { type: "frame", name: "Content", layout: "vertical", padding: [0, 20, 16, 20], gap: 12, width: "fill_container", placeholder: true })
-cardActions=I(card, { type: "frame", name: "Actions", layout: "horizontal", padding: [12, 20, 16, 20], gap: 8, width: "fill_container", mainAxisAlignment: "flex_end", alignItems: "center" })
+cardActions=I(card, { type: "frame", name: "Actions", layout: "horizontal", padding: [12, 20, 16, 20], gap: 8, width: "fill_container", justifyContent: "end", alignItems: "center" })
 ```
 
 **Batch 6 total: 3 category + 6 component = 9 operations**
@@ -401,27 +411,33 @@ tabsCatTitle=I(tabsCategory, { type: "text", content: "Tabs", fontFamily: "$--fo
 tabsRow=I(tabsCategory, { type: "frame", layout: "horizontal", gap: 16, width: "fill_container" })
 ```
 
-### Tabs/Container
+### Tabs/ActiveTab & Tabs/InactiveTab (hidden building blocks)
+
+Create the child components inside a hidden `_defs` frame — they serve as reusable definitions referenced by the Container but don't clutter the display row.
 
 ```javascript
-tabsContainer=I(tabsRow, { type: "frame", name: "Tabs/Container", reusable: true, layout: "horizontal", stroke: "$--border", strokeSides: ["bottom"], strokeThickness: 1, gap: 0, width: "fill_container", height: "hug_contents" })
-```
-
-### Tabs/ActiveTab
-
-```javascript
-tabActive=I(tabsRow, { type: "frame", name: "Tabs/ActiveTab", reusable: true, layout: "horizontal", padding: [10, 16, 10, 16], stroke: "$--primary", strokeSides: ["bottom"], strokeThickness: 2, mainAxisAlignment: "center" })
+tabsDefs=I(tabsCategory, { type: "frame", name: "_defs", width: 0, height: 0, clip: true })
+tabActive=I(tabsDefs, { type: "frame", name: "Tabs/ActiveTab", reusable: true, layout: "horizontal", padding: [10, 16, 10, 16], stroke: "$--primary", strokeSides: ["bottom"], strokeThickness: 2, justifyContent: "center" })
 tabActiveText=I(tabActive, { type: "text", name: "Label", content: "Active Tab", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--foreground" })
-```
-
-### Tabs/InactiveTab
-
-```javascript
-tabInactive=I(tabsRow, { type: "frame", name: "Tabs/InactiveTab", reusable: true, layout: "horizontal", padding: [10, 16, 10, 16], mainAxisAlignment: "center" })
+tabInactive=I(tabsDefs, { type: "frame", name: "Tabs/InactiveTab", reusable: true, layout: "horizontal", padding: [10, 16, 10, 16], justifyContent: "center" })
 tabInactiveText=I(tabInactive, { type: "text", name: "Label", content: "Tab", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "400", fill: "$--muted-foreground" })
 ```
 
-**Batch 9 total: 3 category + 5 component = 8 operations**
+### Tabs/Container (populated with demo tabs — in the display row)
+
+```javascript
+tabsContainer=I(tabsRow, { type: "frame", name: "Tabs/Container", reusable: true, layout: "horizontal", stroke: "$--border", strokeSides: ["bottom"], strokeThickness: 1, gap: 0, width: "fill_container", height: "hug_contents" })
+tc1=I(tabsContainer, { type: "ref", ref: tabActive })
+U(tc1+"/Label", { content: "Overview" })
+tc2=I(tabsContainer, { type: "ref", ref: tabInactive })
+U(tc2+"/Label", { content: "Details" })
+tc3=I(tabsContainer, { type: "ref", ref: tabInactive })
+U(tc3+"/Label", { content: "Settings" })
+```
+
+**Note:** Child components go in a hidden `_defs` frame (`width: 0, height: 0, clip: true`) so only the assembled Container is visible. The Container must be created AFTER its children so it can reference them. Container components with `hug_contents` height collapse to zero when empty — always populate with demo refs.
+
+**Batch 9 total: 3 category + 12 component = 15 operations**
 
 ---
 
@@ -454,17 +470,37 @@ pageCatTitle=I(pageCategory, { type: "text", content: "Pagination", fontFamily: 
 pageRow=I(pageCategory, { type: "frame", layout: "horizontal", gap: 8, width: "fill_container", alignItems: "center" })
 ```
 
+Create the child components inside a hidden `_defs` frame — they serve as reusable definitions referenced by the Container but don't clutter the display row.
+
 ```javascript
-pageContainer=I(pageRow, { type: "frame", name: "Pagination/Container", reusable: true, layout: "horizontal", gap: 4, mainAxisAlignment: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
-pageItem=I(pageRow, { type: "frame", name: "Pagination/Item", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", width: 36, height: 36, mainAxisAlignment: "center", alignItems: "center" })
+pageDefs=I(pageCategory, { type: "frame", name: "_defs", width: 0, height: 0, clip: true })
+pageItem=I(pageDefs, { type: "frame", name: "Pagination/Item", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", width: 36, height: 36, justifyContent: "center", alignItems: "center" })
 pageItemText=I(pageItem, { type: "text", name: "Number", content: "1", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground", textAlignHorizontal: "center" })
-pageActive=I(pageRow, { type: "frame", name: "Pagination/ActiveItem", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-md", width: 36, height: 36, mainAxisAlignment: "center", alignItems: "center" })
+pageActive=I(pageDefs, { type: "frame", name: "Pagination/ActiveItem", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-md", width: 36, height: 36, justifyContent: "center", alignItems: "center" })
 pageActiveText=I(pageActive, { type: "text", name: "Number", content: "1", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--primary-foreground", textAlignHorizontal: "center" })
-pagePrevNext=I(pageRow, { type: "frame", name: "Pagination/PrevNext", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [8, 12, 8, 12], mainAxisAlignment: "center", alignItems: "center" })
+pagePrevNext=I(pageDefs, { type: "frame", name: "Pagination/PrevNext", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--border", strokeThickness: 1, cornerRadius: "$--radius-md", padding: [8, 12, 8, 12], justifyContent: "center", alignItems: "center" })
 pagePrevNextText=I(pagePrevNext, { type: "text", name: "Label", content: "Next", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground" })
 ```
 
-**Batch 11 total: 3 category + 7 component = 10 operations**
+Then create the Container in the display row, populated with refs:
+
+```javascript
+pageContainer=I(pageRow, { type: "frame", name: "Pagination/Container", reusable: true, layout: "horizontal", gap: 4, justifyContent: "center", alignItems: "center", width: "hug_contents", height: "hug_contents" })
+pp1=I(pageContainer, { type: "ref", ref: pagePrevNext })
+U(pp1+"/Label", { content: "Prev" })
+pi1=I(pageContainer, { type: "ref", ref: pageItem })
+U(pi1+"/Number", { content: "1" })
+pa1=I(pageContainer, { type: "ref", ref: pageActive })
+U(pa1+"/Number", { content: "2" })
+pi2=I(pageContainer, { type: "ref", ref: pageItem })
+U(pi2+"/Number", { content: "3" })
+pp2=I(pageContainer, { type: "ref", ref: pagePrevNext })
+U(pp2+"/Label", { content: "Next" })
+```
+
+**Note:** Child components go in a hidden `_defs` frame (`width: 0, height: 0, clip: true`) so only the assembled Container is visible. The Container must be created AFTER its children so it can reference them. Container components with `hug_contents` height collapse to zero when empty — always populate with demo refs showing a realistic pagination: Prev, 1, **2**, 3, Next.
+
+**Batch 11 total: 3 category + 18 component = 21 operations**
 
 ---
 
@@ -478,12 +514,12 @@ modalRow=I(modalCategory, { type: "frame", layout: "horizontal", gap: 16, width:
 
 ```javascript
 modal=I(modalRow, { type: "frame", name: "Modal/Dialog", reusable: true, layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 480, height: "hug_contents", clip: true })
-modalHeader=I(modal, { type: "frame", name: "Header", layout: "horizontal", padding: [20, 24, 12, 24], width: "fill_container", mainAxisAlignment: "space_between", alignItems: "center" })
+modalHeader=I(modal, { type: "frame", name: "Header", layout: "horizontal", padding: [20, 24, 12, 24], width: "fill_container", justifyContent: "space_between", alignItems: "center" })
 modalTitle=I(modalHeader, { type: "text", name: "Title", content: "Dialog Title", fontFamily: "$--font-primary", fontSize: "$--text-lg", fontWeight: "600", fill: "$--card-foreground" })
 modalClose=I(modalHeader, { type: "text", name: "CloseIcon", content: "\u2715", fontSize: "$--text-base", fill: "$--muted-foreground" })
 modalBody=I(modal, { type: "frame", name: "Body", layout: "vertical", padding: [0, 24, 16, 24], gap: 12, width: "fill_container", placeholder: true })
 modalBodyText=I(modalBody, { type: "text", name: "Description", content: "Dialog content goes here. Add any content or form elements.", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--muted-foreground", width: "fill_container", lineHeight: 1.5 })
-modalFooter=I(modal, { type: "frame", name: "Footer", layout: "horizontal", padding: [12, 24, 20, 24], gap: 8, width: "fill_container", mainAxisAlignment: "flex_end" })
+modalFooter=I(modal, { type: "frame", name: "Footer", layout: "horizontal", padding: [12, 24, 20, 24], gap: 8, width: "fill_container", justifyContent: "end" })
 ```
 
 **Batch 12 total: 3 category + 7 component = 10 operations**
@@ -561,7 +597,7 @@ miscRow=I(miscCategory, { type: "frame", layout: "horizontal", gap: 16, width: "
 ### Avatar
 
 ```javascript
-avatar=I(miscRow, { type: "frame", name: "Avatar", reusable: true, layout: "horizontal", fill: "$--muted", cornerRadius: "$--radius-pill", width: 40, height: 40, mainAxisAlignment: "center", alignItems: "center", clip: true })
+avatar=I(miscRow, { type: "frame", name: "Avatar", reusable: true, layout: "horizontal", fill: "$--muted", cornerRadius: "$--radius-pill", width: 40, height: 40, justifyContent: "center", alignItems: "center", clip: true })
 avatarInitials=I(avatar, { type: "text", name: "Initials", content: "AB", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fontWeight: "600", fill: "$--muted-foreground", textAlignHorizontal: "center" })
 ```
 
@@ -574,21 +610,21 @@ divider=I(miscRow, { type: "frame", name: "Divider", reusable: true, fill: "$--b
 ### Switch
 
 ```javascript
-switchComp=I(miscRow, { type: "frame", name: "Switch", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-pill", width: 44, height: 24, padding: [2, 2, 2, 2], mainAxisAlignment: "flex_end", alignItems: "center" })
+switchComp=I(miscRow, { type: "frame", name: "Switch", reusable: true, layout: "horizontal", fill: "$--primary", cornerRadius: "$--radius-pill", width: 44, height: 24, padding: [2, 2, 2, 2], justifyContent: "end", alignItems: "center" })
 switchKnob=I(switchComp, { type: "ellipse", name: "Knob", fill: "#FFFFFF", width: 20, height: 20 })
 ```
 
 ### Checkbox
 
 ```javascript
-checkbox=I(miscRow, { type: "frame", name: "Checkbox", reusable: true, layout: "horizontal", fill: "$--primary", stroke: "$--primary", strokeThickness: 1, cornerRadius: "$--radius-sm", width: 20, height: 20, mainAxisAlignment: "center", alignItems: "center" })
+checkbox=I(miscRow, { type: "frame", name: "Checkbox", reusable: true, layout: "horizontal", fill: "$--primary", stroke: "$--primary", strokeThickness: 1, cornerRadius: "$--radius-sm", width: 20, height: 20, justifyContent: "center", alignItems: "center" })
 checkboxMark=I(checkbox, { type: "text", name: "Check", content: "\u2713", fontSize: "$--text-xs", fill: "$--primary-foreground", textAlignHorizontal: "center" })
 ```
 
 ### Radio
 
 ```javascript
-radio=I(miscRow, { type: "frame", name: "Radio", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--primary", strokeThickness: 2, cornerRadius: "$--radius-pill", width: 20, height: 20, mainAxisAlignment: "center", alignItems: "center" })
+radio=I(miscRow, { type: "frame", name: "Radio", reusable: true, layout: "horizontal", fill: "$--background", stroke: "$--primary", strokeThickness: 2, cornerRadius: "$--radius-pill", width: 20, height: 20, justifyContent: "center", alignItems: "center" })
 radioDot=I(radio, { type: "ellipse", name: "Dot", fill: "$--primary", width: 10, height: 10 })
 ```
 

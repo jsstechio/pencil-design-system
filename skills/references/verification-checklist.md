@@ -138,6 +138,91 @@ Only `$--font-primary`, `$--font-secondary`, and `$--font-mono` should appear.
 - Components without `reusable: true` (they won't be recognized as components)
 - Naming consistency (all should follow `Category/Variant` pattern)
 
+### Check 5b — Layout Enforcement Pass (MANDATORY — fixes #1 visual bug)
+
+**Purpose:** The AI ALWAYS drops `layout: "horizontal"` from some frames during generation — even when specs include it 100% of the time. This is a known model behavior limitation, NOT a spec problem. This pass must run after every generation to catch and fix missing layouts.
+
+**Why brute-force:** `batch_get` does NOT display `layout: "horizontal"` in its output (it's considered the default value). This means you CANNOT detect missing layouts by reading node data — you must apply `layout: "horizontal"` defensively to every frame that uses flex properties.
+
+**Algorithm:**
+
+```
+1. For EACH top-level section (Foundations, Components, Patterns, screens):
+   batch_get({ filePath, parentId: sectionId, patterns: [{ type: "frame" }], searchDepth: 10, readDepth: 0 })
+
+2. From results, collect every frame ID where ANY of these appear:
+   - gap
+   - alignItems
+   - justifyContent
+
+3. Classify each frame:
+   - Names containing "Row", "Grid", "Bar", "Header", "Footer", "Actions", "Nav",
+     "btn", "cta", or components like Button/*, Badge/*, Alert/*, Input/*,
+     Pagination/*, Tabs/*, Breadcrumb/*, Dropdown/* → layout: "horizontal"
+   - Names containing "Col", "Section", "Form", "Pattern", "Content",
+     or category frames → layout: "vertical"
+   - When unsure → layout: "horizontal" (safer default for frames with gap)
+
+4. Bulk-apply in batch_design (max 25 per call):
+   U("frameId", { layout: "horizontal" })
+
+5. Screenshot each section to verify no overlapping elements.
+```
+
+**This is safe to re-run** — setting layout on a frame that already has it is a no-op.
+
+**Also check for non-frame properties:**
+
+| If a frame has... | It MUST also have... | Why |
+|---|---|---|
+| `gap` | `layout: "horizontal"` or `layout: "vertical"` | Gap is ignored without layout |
+| `justifyContent` | `layout` | justifyContent requires layout |
+| `alignItems: "center"` + fixed `width` + single text child | `layout: "horizontal"` + `justifyContent: "center"` | Otherwise text won't be horizontally centered |
+| `width: "fill_container"` children in a row | Parent has `layout: "horizontal"` | fill_container only works with layout |
+| Children meant to be stacked | Parent has `layout: "vertical"` | Otherwise children overlap at (0,0) |
+
+**High-risk components** (most likely to have dropped properties):
+
+| Component | Required Properties | Common Miss |
+|---|---|---|
+| Pagination/Item | `layout: "horizontal", justifyContent: "center", alignItems: "center"` | `layout` and `justifyContent` dropped, text left-aligned |
+| Pagination/ActiveItem | `layout: "horizontal", justifyContent: "center", alignItems: "center"` | Same as above |
+| Badge/* | `layout: "horizontal", justifyContent: "center"` | `justifyContent` dropped |
+| Checkbox | `layout: "horizontal", justifyContent: "center", alignItems: "center"` | Text not centered |
+| Radio | `layout: "horizontal", justifyContent: "center", alignItems: "center"` | Dot not centered |
+| Avatar | `layout: "horizontal", justifyContent: "center", alignItems: "center"` | Initials not centered |
+| Card Grid (pattern) | `layout: "horizontal"` | Cards overflow without layout |
+
+**Fix process:**
+```
+batch_get({ filePath, patterns: [{ reusable: true }], readDepth: 1 })
+```
+
+For each component, check that `layout` exists. If a component has `alignItems` but no `layout`, add it:
+```javascript
+U("componentId", { layout: "horizontal", justifyContent: "center" })
+```
+
+**Quick spot-check method:** After fixing, take a screenshot of the component. If text/content inside a fixed-size frame is left-aligned instead of centered, `justifyContent: "center"` is missing.
+
+### Check 5c — Shadow Effect Color Format
+
+**Purpose:** The `rgba()` color format is silently accepted but produces NO visible shadow in Pencil. All shadow colors must use 8-digit hex format.
+
+**Tool:** `batch_get` on all nodes with `effect` property, or search the Elevation section.
+
+**Check:** Every `effect.color` value must be `#RRGGBBAA` hex format (e.g., `#0000001A`), NOT `rgba(...)`.
+
+**Fix:**
+```javascript
+// Wrong (invisible shadow):
+U("elevId", { effect: { type: "shadow", shadowType: "outer", color: "rgba(0,0,0,0.1)", blur: 15, offset: { x: 0, y: 10 } } })
+// Correct (visible shadow):
+U("elevId", { effect: { type: "shadow", shadowType: "outer", color: "#0000001A", blur: 15, offset: { x: 0, y: 10 } } })
+```
+
+**Common conversions:** 5%→`#0000000D`, 7%→`#00000012`, 10%→`#0000001A`, 15%→`#00000026`, 20%→`#00000033`, 50%→`#00000080`.
+
 ### Check 6 — Organization Audit
 
 **Tool:** `batch_get({ filePath })` (list top-level document children)

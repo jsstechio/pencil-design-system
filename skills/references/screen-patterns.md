@@ -2,13 +2,25 @@
 
 Layout patterns, composition showcases, and domain-specific screen templates. Load this file during Phases 7 and 8.
 
+## CRITICAL — Mandatory Property Rules
+
+> **These rules address the #1 cause of visual bugs. Violating them produces broken layouts and invisible effects.**
+
+1. **EVERY frame with `gap`, `alignItems`, or `justifyContent` MUST have an explicit `layout: "horizontal"` or `layout: "vertical"`.** This includes: navbars, button rows, CTA rows, feature grids, card grids, form button rows, breadcrumb bars, tab bars — ALL horizontal arrangements.
+
+2. **Shadow `effect` colors MUST use 8-digit hex (`#RRGGBBAA`), NOT `rgba()`.** The `rgba()` format produces NO visible shadow.
+
 ## Important Rules
 
 - Every element on a screen must be a `ref` instance of a reusable component, or a simple layout frame.
 - Never recreate component internals — always use `{ type: "ref", ref: "ComponentId" }`.
 - Find component IDs first: `batch_get({ filePath, patterns: [{ reusable: true }] })`.
-- All frames use `fill: "$--background"` or `fill: "$--card"` — never hardcoded hex.
-- Call `get_screenshot` after completing each screen or pattern.
+- **Documentation sections** (Foundations, Components, Patterns) use `fill: "#FFFFFF"` — neutral white so all component variants remain visible regardless of theme.
+- **Application screens** (Landing Page, Dashboard, etc.) use `fill: "$--background"` or `fill: "$--card"` — themed fills.
+- For centered form/auth screens, set both `alignItems: "center"` (horizontal) AND `justifyContent: "center"` (vertical) on the screen frame.
+- **Every horizontal row of elements MUST have `layout: "horizontal"`** — setting `gap` alone does NOT enable auto-layout. Without explicit layout, children are absolutely positioned and overflow their container.
+- **Use `width: "fill_container"` for grid items** — hardcoded pixel widths (e.g., `width: 380`) break when container padding varies. `"fill_container"` distributes evenly.
+- Call `get_screenshot` after completing each screen or pattern. Check for overflow — elements extending beyond frame boundaries.
 
 ---
 
@@ -19,7 +31,7 @@ Create the Patterns section frame to the right of Components (x: 3080, y: 0). Th
 ### Pre-requisite: Create Patterns Section Frame
 
 ```javascript
-patternsSection=I("document", { type: "frame", name: "Patterns", width: 1440, height: 1800, x: 3080, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "$--background" })
+patternsSection=I("document", { type: "frame", name: "Patterns", width: 1440, height: 2200, x: 3080, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "#FFFFFF" })
 patternsSectionTitle=I(patternsSection, { type: "text", content: "Patterns", fontFamily: "$--font-primary", fontSize: 48, fontWeight: "700", fill: "$--foreground" })
 patternsSectionSubtitle=I(patternsSection, { type: "text", content: "Composition showcases demonstrating component usage", fontFamily: "$--font-secondary", fontSize: 18, fill: "$--muted-foreground", width: "fill_container" })
 ```
@@ -46,7 +58,7 @@ emailField=I(formDemo, { type: "ref", ref: "InputGroupId", width: "fill_containe
 U(emailField+"/Label", { content: "Email" })
 U(emailField+"/Placeholder", { content: "you@example.com" })
 messageField=I(formDemo, { type: "ref", ref: "InputTextareaId", width: "fill_container" })
-formBtnRow=I(formDemo, { type: "frame", layout: "horizontal", gap: 8, width: "fill_container", mainAxisAlignment: "flex_end" })
+formBtnRow=I(formDemo, { type: "frame", layout: "horizontal", gap: 8, width: "fill_container", justifyContent: "end" })
 formCancelBtn=I(formBtnRow, { type: "ref", ref: "ButtonOutlineId" })
 U(formCancelBtn+"/Label", { content: "Cancel" })
 formSubmitBtn=I(formBtnRow, { type: "ref", ref: "ButtonPrimaryId" })
@@ -66,13 +78,13 @@ dataPatternFrame=I(patternsSection, { type: "frame", name: "Data Display Pattern
 dataPatternTitle=I(dataPatternFrame, { type: "text", content: "Data Display Pattern", fontFamily: "$--font-primary", fontSize: 24, fontWeight: "600", fill: "$--foreground" })
 dataPatternDesc=I(dataPatternFrame, { type: "text", content: "Table with header, data rows, and pagination controls.", fontFamily: "$--font-secondary", fontSize: 14, fill: "$--muted-foreground", width: "fill_container" })
 
-dataHeader=I(dataPatternFrame, { type: "frame", layout: "horizontal", width: "fill_container", mainAxisAlignment: "space_between", alignItems: "center" })
+dataHeader=I(dataPatternFrame, { type: "frame", layout: "horizontal", width: "fill_container", justifyContent: "space_between", alignItems: "center" })
 dataHeaderTitle=I(dataHeader, { type: "text", content: "Users", fontFamily: "$--font-primary", fontSize: 20, fontWeight: "600", fill: "$--foreground" })
 dataAddBtn=I(dataHeader, { type: "ref", ref: "ButtonPrimaryId" })
 U(dataAddBtn+"/Label", { content: "Add User" })
 
 dataTable=I(dataPatternFrame, { type: "ref", ref: "TableWrapperId", width: "fill_container" })
-dataPageRow=I(dataPatternFrame, { type: "frame", layout: "horizontal", width: "fill_container", mainAxisAlignment: "center" })
+dataPageRow=I(dataPatternFrame, { type: "frame", layout: "horizontal", width: "fill_container", justifyContent: "center" })
 dataPagination=I(dataPageRow, { type: "ref", ref: "PaginationContainerId" })
 ```
 
@@ -125,15 +137,15 @@ cardPatternDesc=I(cardPatternFrame, { type: "text", content: "Responsive card gr
 
 cardGrid=I(cardPatternFrame, { type: "frame", name: "Card Grid", layout: "horizontal", gap: 24, width: "fill_container" })
 
-card1=I(cardGrid, { type: "ref", ref: "CardId", width: 380 })
+card1=I(cardGrid, { type: "ref", ref: "CardId", width: "fill_container" })
 U(card1+"/Title", { content: "Feature One" })
 U(card1+"/Description", { content: "A brief description of the first feature or product." })
 
-card2=I(cardGrid, { type: "ref", ref: "CardId", width: 380 })
+card2=I(cardGrid, { type: "ref", ref: "CardId", width: "fill_container" })
 U(card2+"/Title", { content: "Feature Two" })
 U(card2+"/Description", { content: "A brief description of the second feature or product." })
 
-card3=I(cardGrid, { type: "ref", ref: "CardId", width: 380 })
+card3=I(cardGrid, { type: "ref", ref: "CardId", width: "fill_container" })
 U(card3+"/Title", { content: "Feature Three" })
 U(card3+"/Description", { content: "A brief description of the third feature or product." })
 ```
@@ -182,7 +194,7 @@ U(sidebar+"/NavItemId", { content: "Dashboard" })
 **Main content area:**
 ```javascript
 main=I(screen, { type: "frame", name: "Main", layout: "vertical", width: "fill_container", height: "fill_container" })
-header=I(main, { type: "frame", name: "Header", layout: "horizontal", padding: [16, 24, 16, 24], width: "fill_container", height: 64, alignItems: "center", mainAxisAlignment: "space_between", stroke: "$--border", strokeSides: ["bottom"], strokeThickness: 1 })
+header=I(main, { type: "frame", name: "Header", layout: "horizontal", padding: [16, 24, 16, 24], width: "fill_container", height: 64, alignItems: "center", justifyContent: "space_between", stroke: "$--border", strokeSides: ["bottom"], strokeThickness: 1 })
 content=I(main, { type: "frame", name: "Content", layout: "vertical", padding: [24, 32, 24, 32], gap: 24, width: "fill_container", height: "fill_container" })
 ```
 
@@ -221,17 +233,17 @@ screen=I("document", { type: "frame", name: "Landing Page", width: 1440, height:
 
 **Navigation bar:**
 ```javascript
-nav=I(screen, { type: "frame", name: "Navbar", layout: "horizontal", padding: [0, 80, 0, 80], width: "fill_container", height: 64, alignItems: "center", mainAxisAlignment: "space_between" })
+nav=I(screen, { type: "frame", name: "Navbar", layout: "horizontal", padding: [0, 80, 0, 80], width: "fill_container", height: 64, alignItems: "center", justifyContent: "space_between" })
 logo=I(nav, { type: "text", content: "Brand", fontFamily: "$--font-primary", fontSize: 24, fontWeight: "700", fill: "$--foreground" })
 navLinks=I(nav, { type: "frame", layout: "horizontal", gap: 32, alignItems: "center" })
 ```
 
 **Hero section:**
 ```javascript
-hero=I(screen, { type: "frame", name: "Hero", layout: "vertical", padding: [80, 80, 80, 80], gap: 24, width: "fill_container", height: 560, mainAxisAlignment: "center", alignItems: "center" })
+hero=I(screen, { type: "frame", name: "Hero", layout: "vertical", padding: [80, 80, 80, 80], gap: 24, width: "fill_container", height: 560, justifyContent: "center", alignItems: "center" })
 headline=I(hero, { type: "text", content: "Domain Headline Here", fontFamily: "$--font-primary", fontSize: 56, fontWeight: "700", fill: "$--foreground", textAlignHorizontal: "center", width: 800 })
 subline=I(hero, { type: "text", content: "Supporting description text that explains the value.", fontFamily: "$--font-secondary", fontSize: 20, fill: "$--muted-foreground", textAlignHorizontal: "center", width: 600 })
-ctaRow=I(hero, { type: "frame", layout: "horizontal", gap: 12, mainAxisAlignment: "center" })
+ctaRow=I(hero, { type: "frame", layout: "horizontal", gap: 12, justifyContent: "center" })
 ctaPrimary=I(ctaRow, { type: "ref", ref: "ButtonPrimaryId" })
 ctaSecondary=I(ctaRow, { type: "ref", ref: "ButtonOutlineId" })
 ```
@@ -254,7 +266,7 @@ Section (vertical, padded)
 **Grid implementation:**
 ```javascript
 section=I(parent, { type: "frame", name: "Products", layout: "vertical", padding: [40, 80, 40, 80], gap: 24, width: "fill_container" })
-sectionHeader=I(section, { type: "frame", layout: "horizontal", width: "fill_container", mainAxisAlignment: "space_between", alignItems: "center" })
+sectionHeader=I(section, { type: "frame", layout: "horizontal", width: "fill_container", justifyContent: "space_between", alignItems: "center" })
 sectionTitle=I(sectionHeader, { type: "text", content: "Our Products", fontFamily: "$--font-primary", fontSize: 32, fontWeight: "700", fill: "$--foreground" })
 grid=I(section, { type: "frame", name: "Grid", layout: "horizontal", gap: 24, width: "fill_container" })
 ```
@@ -296,7 +308,7 @@ U(nameField+"/Placeholder", { content: "Enter your name" })
 emailField=I(form, { type: "ref", ref: "InputGroupId", width: "fill_container" })
 U(emailField+"/Label", { content: "Email" })
 U(emailField+"/Placeholder", { content: "you@example.com" })
-btnRow=I(form, { type: "frame", layout: "horizontal", gap: 8, width: "fill_container", mainAxisAlignment: "flex_end" })
+btnRow=I(form, { type: "frame", layout: "horizontal", gap: 8, width: "fill_container", justifyContent: "end" })
 submitBtn=I(btnRow, { type: "ref", ref: "ButtonPrimaryId" })
 U(submitBtn+"/Label", { content: "Send Message" })
 ```
@@ -324,7 +336,7 @@ Content area (vertical)
 **Implementation:**
 ```javascript
 tableSection=I(contentArea, { type: "frame", layout: "vertical", gap: 16, width: "fill_container" })
-tableHeader=I(tableSection, { type: "frame", layout: "horizontal", width: "fill_container", mainAxisAlignment: "space_between", alignItems: "center" })
+tableHeader=I(tableSection, { type: "frame", layout: "horizontal", width: "fill_container", justifyContent: "space_between", alignItems: "center" })
 tableTitle=I(tableHeader, { type: "text", content: "Users", fontFamily: "$--font-primary", fontSize: 24, fontWeight: "600", fill: "$--foreground" })
 addBtn=I(tableHeader, { type: "ref", ref: "ButtonPrimaryId" })
 U(addBtn+"/Label", { content: "Add User" })

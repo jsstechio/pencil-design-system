@@ -170,10 +170,10 @@ elevSection=I(foundations, { type: "frame", name: "Elevation", layout: "vertical
 elevTitle=I(elevSection, { type: "text", content: "Elevation", fontFamily: "$--font-primary", fontSize: 32, fontWeight: "700", fill: "$--foreground" })
 elevRow=I(elevSection, { type: "frame", layout: "horizontal", gap: 24, width: "fill_container" })
 
-elevSm=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, shadow: "$--shadow-sm", mainAxisAlignment: "center", alignItems: "center" })
+elevSm=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, effect: { type: "shadow", shadowType: "outer", color: "#0000000D", blur: 2, offset: { x: 0, y: 1 } }, justifyContent: "center", alignItems: "center" })
 elevSmLabel=I(elevSm, { type: "text", content: "shadow-sm", fontFamily: "$--font-mono", fontSize: 12, fill: "$--muted-foreground", textAlignHorizontal: "center" })
 
-elevMd=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, shadow: "$--shadow-md", mainAxisAlignment: "center", alignItems: "center" })
+elevMd=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, effect: { type: "shadow", shadowType: "outer", color: "#00000012", blur: 6, offset: { x: 0, y: 4 } }, justifyContent: "center", alignItems: "center" })
 elevMdLabel=I(elevMd, { type: "text", content: "shadow-md", fontFamily: "$--font-mono", fontSize: 12, fill: "$--muted-foreground", textAlignHorizontal: "center" })
 ```
 
@@ -188,10 +188,10 @@ elevMdLabel=I(elevMd, { type: "text", content: "shadow-md", fontFamily: "$--font
 ### Remaining Elevation Cards (4 ops)
 
 ```javascript
-elevLg=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, shadow: "$--shadow-lg", mainAxisAlignment: "center", alignItems: "center" })
+elevLg=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, effect: { type: "shadow", shadowType: "outer", color: "#0000001A", blur: 15, offset: { x: 0, y: 10 } }, justifyContent: "center", alignItems: "center" })
 elevLgLabel=I(elevLg, { type: "text", content: "shadow-lg", fontFamily: "$--font-mono", fontSize: 12, fill: "$--muted-foreground", textAlignHorizontal: "center" })
 
-elevXl=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, shadow: "$--shadow-xl", mainAxisAlignment: "center", alignItems: "center" })
+elevXl=I(elevRow, { type: "frame", layout: "vertical", fill: "$--card", cornerRadius: "$--radius-lg", width: 160, height: 100, padding: 16, effect: { type: "shadow", shadowType: "outer", color: "#00000026", blur: 25, offset: { x: 0, y: 20 } }, justifyContent: "center", alignItems: "center" })
 elevXlLabel=I(elevXl, { type: "text", content: "shadow-xl", fontFamily: "$--font-mono", fontSize: 12, fill: "$--muted-foreground", textAlignHorizontal: "center" })
 ```
 

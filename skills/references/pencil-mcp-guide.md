@@ -193,20 +193,20 @@ set_variables({
   variables: {
     "--primary": {
       type: "color",
-      values: {
-        "mode:light": "#8B4513",
-        "mode:dark": "#D4A574"
-      }
+      value: [
+        { value: "#8B4513", theme: { mode: "light" } },
+        { value: "#D4A574", theme: { mode: "dark" } }
+      ]
     },
     "--background": {
       type: "color",
-      values: {
-        "mode:light": "#FFF8DC",
-        "mode:dark": "#1A1410"
-      }
+      value: [
+        { value: "#FFF8DC", theme: { mode: "light" } },
+        { value: "#1A1410", theme: { mode: "dark" } }
+      ]
     },
     "--font-primary": {
-      type: "font",
+      type: "string",
       value: "Playfair Display"
     },
     "--radius-md": {
@@ -362,7 +362,7 @@ search_all_unique_properties({
 
 ```javascript
 // Create the component master
-btn=I("document", { type: "frame", name: "Button/Primary", layout: "horizontal", reusable: true, fill: "$--primary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, mainAxisAlignment: "center", alignItems: "center" })
+btn=I("document", { type: "frame", name: "Button/Primary", layout: "horizontal", reusable: true, fill: "$--primary", cornerRadius: "$--radius-md", padding: [10, 20, 10, 20], gap: 8, justifyContent: "center", alignItems: "center" })
 label=I(btn, { type: "text", name: "Label", content: "Button", fontFamily: "$--font-secondary", fontSize: 14, fontWeight: "600", fill: "$--primary-foreground" })
 ```
 
@@ -382,6 +382,6 @@ U(submitBtn+"/Label", { content: "Submit Order" })
 // Call find_empty_space_on_canvas first to get x, y
 
 screen=I("document", { type: "frame", name: "Landing Page", width: 1440, height: 900, x: 1600, y: 0, layout: "vertical", fill: "$--background", clip: true })
-hero=I(screen, { type: "frame", name: "Hero Section", layout: "vertical", width: "fill_container", height: 500, padding: [80, 120, 80, 120], gap: 24, mainAxisAlignment: "center" })
+hero=I(screen, { type: "frame", name: "Hero Section", layout: "vertical", width: "fill_container", height: 500, padding: [80, 120, 80, 120], gap: 24, justifyContent: "center" })
 heading=I(hero, { type: "text", content: "Fresh Baked Daily", fontFamily: "$--font-primary", fontSize: 56, fontWeight: "700", fill: "$--foreground", width: "fill_container" })
 ```

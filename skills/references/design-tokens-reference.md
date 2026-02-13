@@ -28,7 +28,22 @@ Define a single theme axis `mode` with values `light` and `dark`:
 }
 ```
 
-Variables that support theming use the `values` property with `"mode:light"` and `"mode:dark"` keys. Variables that are theme-independent use the `value` property.
+Variables that support theming use the `value` property with an **array** of `{ value, theme }` objects. Variables that are theme-independent use `value` with a simple string/number.
+
+> **CRITICAL — Theme Format:** You MUST use the array format with the `value` property (singular, NOT `values`):
+> ```json
+> "--background": {
+>   "type": "color",
+>   "value": [
+>     { "value": "#FAFAFA", "theme": { "mode": "light" } },
+>     { "value": "#0A0A0A", "theme": { "mode": "dark" } }
+>   ]
+> }
+> ```
+> Do NOT use `"values": { "mode:light": "#hex" }` — this causes an error.
+> Do NOT use `[{ "value": "#hex" }, { "value": "#hex" }]` without `theme` — this creates unthemed values.
+>
+> **Verification:** After `set_variables`, call `get_variables` and check that each color token has exactly **2** value entries (matching the light/dark axis). Note: `get_variables` always displays `"theme":{}` — this is normal. Themes are matched by array position to the `themes.mode` order.
 
 ---
 
@@ -119,12 +134,16 @@ Box shadow values for elevation. Use these to create visual depth hierarchy.
 
 | Token | Type | Value | Use Case |
 |-------|------|-------|----------|
-| `--shadow-sm` | `shadow` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift (cards, inputs) |
-| `--shadow-md` | `shadow` | `0 4px 6px rgba(0,0,0,0.07)` | Default elevation (dropdowns, popovers) |
-| `--shadow-lg` | `shadow` | `0 10px 15px rgba(0,0,0,0.1)` | Prominent elevation (modals, dialogs) |
-| `--shadow-xl` | `shadow` | `0 20px 25px rgba(0,0,0,0.15)` | Highest elevation (floating panels) |
+| `--shadow-sm` | `string` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift (cards, inputs) |
+| `--shadow-md` | `string` | `0 4px 6px rgba(0,0,0,0.07)` | Default elevation (dropdowns, popovers) |
+| `--shadow-lg` | `string` | `0 10px 15px rgba(0,0,0,0.1)` | Prominent elevation (modals, dialogs) |
+| `--shadow-xl` | `string` | `0 20px 25px rgba(0,0,0,0.15)` | Highest elevation (floating panels) |
 
-> **Note:** Pencil may represent shadows differently. Check the `.pen` schema for the exact `shadow` property format. If shadow variables aren't supported as typed tokens, store them as string values and document the intended CSS equivalent.
+> **IMPORTANT — Shadows in Pencil vs Code:**
+> - Shadow tokens are stored as `type: "string"` — they hold CSS shadow notation for code export only.
+> - Pencil does NOT have a `shadow` property on nodes. To apply shadows visually in `.pen` files, use the `effect` property with an explicit shadow object: `effect: { type: "shadow", shadowType: "outer", color: "#0000000D", blur: 2, offset: { x: 0, y: 1 } }`.
+> - **CRITICAL**: Shadow colors MUST use 8-digit hex format (`#RRGGBBAA`), NOT `rgba()`. The `rgba()` format is silently accepted but produces no visible shadow. Common alpha values: 5%→`0D`, 7%→`12`, 10%→`1A`, 15%→`26`, 20%→`33`.
+> - See `foundations-specs.md` Elevation section for the correct `effect` patterns.
 
 ### Font Size Tokens
 
@@ -162,169 +181,145 @@ Use this template as the base. Replace domain-specific values (marked with `<<<`
   "variables": {
     "--background": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<light background>>>",
-        "mode:dark": "<<<dark background>>>"
-      }
+      "value": [
+        { "value": "<<<light background>>>", "theme": { "mode": "light" } },
+        { "value": "<<<dark background>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#0A0A0A",
-        "mode:dark": "#FAFAFA"
-      }
+      "value": [
+        { "value": "#0A0A0A", "theme": { "mode": "light" } },
+        { "value": "#FAFAFA", "theme": { "mode": "dark" } }
+      ]
     },
     "--card": {
       "type": "color",
-      "values": {
-        "mode:light": "#FFFFFF",
-        "mode:dark": "<<<dark card>>>"
-      }
+      "value": [
+        { "value": "#FFFFFF", "theme": { "mode": "light" } },
+        { "value": "<<<dark card>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--card-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#0A0A0A",
-        "mode:dark": "#FAFAFA"
-      }
+      "value": [
+        { "value": "#0A0A0A", "theme": { "mode": "light" } },
+        { "value": "#FAFAFA", "theme": { "mode": "dark" } }
+      ]
     },
     "--popover": {
       "type": "color",
-      "values": {
-        "mode:light": "#FFFFFF",
-        "mode:dark": "<<<dark popover>>>"
-      }
+      "value": [
+        { "value": "#FFFFFF", "theme": { "mode": "light" } },
+        { "value": "<<<dark popover>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--popover-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#0A0A0A",
-        "mode:dark": "#FAFAFA"
-      }
+      "value": [
+        { "value": "#0A0A0A", "theme": { "mode": "light" } },
+        { "value": "#FAFAFA", "theme": { "mode": "dark" } }
+      ]
     },
     "--primary": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<primary>>>",
-        "mode:dark": "<<<primary dark>>>"
-      }
+      "value": [
+        { "value": "<<<primary>>>", "theme": { "mode": "light" } },
+        { "value": "<<<primary dark>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--primary-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#FFFFFF",
-        "mode:dark": "#FFFFFF"
-      }
+      "value": [
+        { "value": "#FFFFFF", "theme": { "mode": "light" } },
+        { "value": "#FFFFFF", "theme": { "mode": "dark" } }
+      ]
     },
     "--secondary": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<secondary light>>>",
-        "mode:dark": "<<<secondary dark>>>"
-      }
+      "value": [
+        { "value": "<<<secondary light>>>", "theme": { "mode": "light" } },
+        { "value": "<<<secondary dark>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--secondary-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#1A1A1A",
-        "mode:dark": "#FAFAFA"
-      }
+      "value": [
+        { "value": "#1A1A1A", "theme": { "mode": "light" } },
+        { "value": "#FAFAFA", "theme": { "mode": "dark" } }
+      ]
     },
     "--muted": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<muted light>>>",
-        "mode:dark": "<<<muted dark>>>"
-      }
+      "value": [
+        { "value": "<<<muted light>>>", "theme": { "mode": "light" } },
+        { "value": "<<<muted dark>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--muted-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#737373",
-        "mode:dark": "#A3A3A3"
-      }
+      "value": [
+        { "value": "#737373", "theme": { "mode": "light" } },
+        { "value": "#A3A3A3", "theme": { "mode": "dark" } }
+      ]
     },
     "--accent": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<accent light>>>",
-        "mode:dark": "<<<accent dark>>>"
-      }
+      "value": [
+        { "value": "<<<accent light>>>", "theme": { "mode": "light" } },
+        { "value": "<<<accent dark>>>", "theme": { "mode": "dark" } }
+      ]
     },
     "--accent-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#1A1A1A",
-        "mode:dark": "#FAFAFA"
-      }
+      "value": [
+        { "value": "#1A1A1A", "theme": { "mode": "light" } },
+        { "value": "#FAFAFA", "theme": { "mode": "dark" } }
+      ]
     },
     "--destructive": {
       "type": "color",
-      "values": {
-        "mode:light": "#EF4444",
-        "mode:dark": "#DC2626"
-      }
+      "value": [
+        { "value": "#EF4444", "theme": { "mode": "light" } },
+        { "value": "#DC2626", "theme": { "mode": "dark" } }
+      ]
     },
     "--destructive-foreground": {
       "type": "color",
-      "values": {
-        "mode:light": "#FFFFFF",
-        "mode:dark": "#FFFFFF"
-      }
+      "value": [
+        { "value": "#FFFFFF", "theme": { "mode": "light" } },
+        { "value": "#FFFFFF", "theme": { "mode": "dark" } }
+      ]
     },
     "--border": {
       "type": "color",
-      "values": {
-        "mode:light": "#E5E5E5",
-        "mode:dark": "#2A2A2A"
-      }
+      "value": [
+        { "value": "#E5E5E5", "theme": { "mode": "light" } },
+        { "value": "#2A2A2A", "theme": { "mode": "dark" } }
+      ]
     },
     "--input": {
       "type": "color",
-      "values": {
-        "mode:light": "#E5E5E5",
-        "mode:dark": "#2A2A2A"
-      }
+      "value": [
+        { "value": "#E5E5E5", "theme": { "mode": "light" } },
+        { "value": "#2A2A2A", "theme": { "mode": "dark" } }
+      ]
     },
     "--ring": {
       "type": "color",
-      "values": {
-        "mode:light": "<<<primary>>>",
-        "mode:dark": "<<<primary dark>>>"
-      }
+      "value": [
+        { "value": "<<<primary>>>", "theme": { "mode": "light" } },
+        { "value": "<<<primary dark>>>", "theme": { "mode": "dark" } }
+      ]
     },
-    "--color-success": {
-      "type": "color",
-      "values": { "mode:light": "#22C55E", "mode:dark": "#4ADE80" }
-    },
-    "--color-success-foreground": {
-      "type": "color",
-      "values": { "mode:light": "#FFFFFF", "mode:dark": "#052E16" }
-    },
-    "--color-warning": {
-      "type": "color",
-      "values": { "mode:light": "#F59E0B", "mode:dark": "#FBBF24" }
-    },
-    "--color-warning-foreground": {
-      "type": "color",
-      "values": { "mode:light": "#FFFFFF", "mode:dark": "#451A03" }
-    },
-    "--color-error": {
-      "type": "color",
-      "values": { "mode:light": "#EF4444", "mode:dark": "#F87171" }
-    },
-    "--color-error-foreground": {
-      "type": "color",
-      "values": { "mode:light": "#FFFFFF", "mode:dark": "#450A0A" }
-    },
-    "--color-info": {
-      "type": "color",
-      "values": { "mode:light": "#3B82F6", "mode:dark": "#60A5FA" }
-    },
-    "--color-info-foreground": {
-      "type": "color",
-      "values": { "mode:light": "#FFFFFF", "mode:dark": "#172554" }
-    },
+    "--color-success": { "type": "color", "value": [{ "value": "#22C55E", "theme": { "mode": "light" } }, { "value": "#4ADE80", "theme": { "mode": "dark" } }] },
+    "--color-success-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#052E16", "theme": { "mode": "dark" } }] },
+    "--color-warning": { "type": "color", "value": [{ "value": "#F59E0B", "theme": { "mode": "light" } }, { "value": "#FBBF24", "theme": { "mode": "dark" } }] },
+    "--color-warning-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#451A03", "theme": { "mode": "dark" } }] },
+    "--color-error": { "type": "color", "value": [{ "value": "#EF4444", "theme": { "mode": "light" } }, { "value": "#F87171", "theme": { "mode": "dark" } }] },
+    "--color-error-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#450A0A", "theme": { "mode": "dark" } }] },
+    "--color-info": { "type": "color", "value": [{ "value": "#3B82F6", "theme": { "mode": "light" } }, { "value": "#60A5FA", "theme": { "mode": "dark" } }] },
+    "--color-info-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#172554", "theme": { "mode": "dark" } }] },
     "--font-primary": {
       "type": "string",
       "value": "<<<display font>>>"
@@ -355,10 +350,10 @@ Use this template as the base. Replace domain-specific values (marked with `<<<`
     "--space-16": { "type": "number", "value": 64 },
     "--space-20": { "type": "number", "value": 80 },
     "--space-24": { "type": "number", "value": 96 },
-    "--shadow-sm": { "type": "shadow", "value": "0 1px 2px rgba(0,0,0,0.05)" },
-    "--shadow-md": { "type": "shadow", "value": "0 4px 6px rgba(0,0,0,0.07)" },
-    "--shadow-lg": { "type": "shadow", "value": "0 10px 15px rgba(0,0,0,0.1)" },
-    "--shadow-xl": { "type": "shadow", "value": "0 20px 25px rgba(0,0,0,0.15)" },
+    "--shadow-sm": { "type": "string", "value": "0 1px 2px rgba(0,0,0,0.05)" },
+    "--shadow-md": { "type": "string", "value": "0 4px 6px rgba(0,0,0,0.07)" },
+    "--shadow-lg": { "type": "string", "value": "0 10px 15px rgba(0,0,0,0.1)" },
+    "--shadow-xl": { "type": "string", "value": "0 20px 25px rgba(0,0,0,0.15)" },
     "--text-xs": { "type": "number", "value": 12 },
     "--text-sm": { "type": "number", "value": 14 },
     "--text-base": { "type": "number", "value": 16 },
@@ -531,9 +526,9 @@ When tokens are used in components:
 | `cornerRadius` on badges | `$--radius-pill` |
 | `stroke` on borders | `$--border` |
 | `stroke` on inputs | `$--input` |
-| `shadow` on cards | `$--shadow-sm` |
-| `shadow` on dropdowns | `$--shadow-md` |
-| `shadow` on modals | `$--shadow-lg` |
+| `effect` on cards | See shadow-sm in foundations-specs.md Elevation section |
+| `effect` on dropdowns | See shadow-md in foundations-specs.md Elevation section |
+| `effect` on modals | See shadow-lg in foundations-specs.md Elevation section |
 | `fontSize` on H1 | `$--text-5xl` |
 | `fontSize` on H2 | `$--text-4xl` |
 | `fontSize` on H3 | `$--text-2xl` |

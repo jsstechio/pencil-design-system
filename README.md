@@ -30,7 +30,7 @@ cp -r pencil-design-system-skill/skills/ .claude/skills/
 ## Requirements
 
 - [Pencil](https://pencil.js.org/) MCP server connected to your AI coding assistant
-- Claude Code CLI, Cursor, Windsurf, or any MCP-compatible editor
+- Claude Code, Cursor, Windsurf, Google Antigravity, Cline, or any MCP-compatible editor
 
 ## Usage
 
@@ -81,7 +81,7 @@ If you need manual config, create `.cursor/mcp.json` in your project root (or `~
 </details>
 
 <details>
-<summary><strong>Windsurf / Antigravity</strong></summary>
+<summary><strong>Windsurf</strong></summary>
 
 Enable MCP in **Settings > Advanced > Cascade > Model Context Protocol**. Install the Pencil extension.
 
@@ -101,6 +101,33 @@ Manual config path: `~/.codeium/windsurf/mcp_config.json`
 **Limits:** 100 tools max. Supports stdio, SSE, and Streamable HTTP transports.
 
 **Tip:** Cascade creates structured plans automatically — ask it to "plan first, then execute" for best results.
+</details>
+
+<details>
+<summary><strong>Google Antigravity</strong></summary>
+
+Antigravity is a VS Code fork — install the Pencil extension the same way as VS Code. Search "Pencil" in the Extensions panel or install manually:
+
+```
+antigravity --install-extension highagency.pencildev
+```
+
+The Pencil MCP server auto-registers when the extension is active. Verify it appears in the MCP servers panel.
+
+If you need manual MCP config, click **Manage MCP Servers > View raw config** (`~/.gemini/antigravity/mcp_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "pencil": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/pencil-mcp"]
+    }
+  }
+}
+```
+
+**Note:** For HTTP-based MCP servers, Antigravity uses `serverUrl` (not `url`).
 </details>
 
 <details>
@@ -224,144 +251,320 @@ set_variables({
 - The `"theme": { "mode": "light" }` entries auto-create the `mode` theme axis with `light`/`dark` values
 - Use `"value"` (singular), never `"values"`
 
-### Full design system prompt
+### Step-by-step workflow
 
-Copy and paste this into **Cursor**, **Windsurf**, **Cline**, or any AI editor with Pencil MCP:
+Run these steps one at a time. Each step is self-contained — paste it, let the AI execute, verify the result, then paste the next step. Replace `[YOUR DOMAIN]` before pasting.
 
 ```
-Create a complete design system in a Pencil .pen file for [YOUR BUSINESS/DOMAIN].
-
-Follow these steps in order:
-
-1. RESEARCH: Search the web for design conventions, color psychology, and typography
-   trends for [YOUR DOMAIN]. Identify a color palette (primary, secondary, accent,
-   background, foreground, muted), a font pairing (heading + body), and the overall
-   tone (clean, bold, playful, etc.).
-
-2. INITIALIZE: Call get_editor_state, open a new document if needed, call
-   get_guidelines("design-system"), then get_style_guide_tags and get_style_guide
-   with 5-10 relevant tags.
-
-3. TOKENS: Use set_variables to create ~60 themed design tokens with light and dark
-   modes. CRITICAL FORMAT — every variable must have a "type" property. Themed color
-   variables use an array of values with theme objects. Do NOT include a "themes" key
-   in the variables object. Example:
-   set_variables({
-     filePath: "file.pen",
-     variables: {
-       "--primary": {
-         "type": "color",
-         "value": [
-           { "value": "#HEX", "theme": { "mode": "light" } },
-           { "value": "#HEX", "theme": { "mode": "dark" } }
-         ]
-       },
-       "--font-primary": { "type": "string", "value": "Font Name" },
-       "--radius-md": { "type": "number", "value": 8 }
-     }
-   })
-   Include tokens for: primary, secondary, accent, background, foreground, muted,
-   card, popover, border, ring, destructive (each with DEFAULT and foreground
-   variants), plus radius (sm/md/lg/xl), spacing scale, font families, font sizes,
-   line heights, and shadows.
-
-4. FOUNDATIONS FRAME (1440x2400): Create visual documentation showing:
-   - Color palette swatches (all tokens with hex values)
-   - Typography specimens (heading + body at multiple sizes)
-   - Spacing scale visualization
-   - Elevation/shadow examples
-   - Border radius showcase
-
-5. COMPONENTS FRAME (1440x2400): Build ~25 reusable components using batch_design
-   (max 25 operations per call), organized by category:
-   - Buttons (primary, secondary, outline, ghost, destructive, icon, loading)
-   - Inputs (text, textarea, select, checkbox, radio, toggle, search)
-   - Typography (h1-h4, body, caption, overline)
-   - Feedback (badge, alert variants, tooltip, progress bar)
-   - Cards (basic, stat card, profile card, pricing card)
-   - Navigation (navbar, sidebar, tabs, breadcrumb, pagination)
-   - Data (table with header + rows, list items)
-   - Overlay (modal, dropdown menu, toast notification)
-   All components must use $-- token variable references (not hardcoded colors),
-   have reusable: true, and use proper layout (vertical/horizontal with gap/padding).
-
-6. PATTERNS FRAME (1440x1800): Create 4 composition patterns using component refs:
-   - Form pattern (labels + inputs + button)
-   - Data display (table or stat cards)
-   - Navigation pattern (navbar + sidebar + content)
-   - Card layout (grid of cards)
-
-7. VERIFY: Take screenshots of each section with get_screenshot and fix any visual
-   issues (overlapping, clipping, misalignment, hardcoded colors).
-
-Business domain: [REPLACE WITH YOUR DOMAIN, e.g., "bakery", "SaaS dashboard", "fitness app"]
-Brand name: [OPTIONAL - REPLACE OR REMOVE]
-Color preferences: [OPTIONAL - e.g., "dark teal and coral"]
+Step 1: Research + Initialize     → design brief, .pen file ready
+         ↓ you verify ↓
+Step 2: Design Tokens             → ~64 themed tokens (light + dark)
+         ↓ you verify ↓
+Step 3: Foundations                → visual documentation frame
+         ↓ you verify ↓
+Step 4: Components                → ~25 reusable components
+         ↓ you verify ↓
+Step 5: Patterns                  → 4 composition showcases
+         ↓ you verify ↓
+Step 6: Domain Screens (optional) → 3-5 generic domain screens
+         ↓ you verify ↓
+Step 7: Business Logic Screens    → screens from YOUR requirements
+  (optional)
+         ↓ you verify ↓
+Step 8: Verify + Fix              → clean, verified system
 ```
 
-### Quick prompts for specific tasks
+---
 
-**Generate just tokens and foundations:**
+### Step 1: Research + Initialize
+
+> **Prerequisite:** None | **Creates:** Design brief + .pen file ready
+
 ```
-Connect to Pencil MCP. Call get_editor_state, create a new .pen document if needed.
-Research the [YOUR DOMAIN] industry for design conventions.
+You are building a design system for [YOUR DOMAIN] in a Pencil .pen file.
 
-Use set_variables to create ~60 themed tokens. IMPORTANT: Do NOT put a "themes" key
-inside variables. Each variable needs a "type" property. Themed colors use:
-  "--name": { "type": "color", "value": [
-    { "value": "#hex", "theme": { "mode": "light" } },
-    { "value": "#hex", "theme": { "mode": "dark" } }
-  ]}
-Non-themed values use: "--name": { "type": "number", "value": 8 }
+1. Call get_editor_state({ include_schema: true }). If no document is active,
+   call open_document("new").
+2. Call get_guidelines("design-system").
+3. Call get_style_guide_tags(), then get_style_guide with 5-10 tags matching
+   [YOUR DOMAIN].
+4. Search the web for design conventions for [YOUR DOMAIN]:
+   - Color palettes used by real [YOUR DOMAIN] websites
+   - Font pairings (search "[YOUR DOMAIN] website fonts 2026")
+   - UI tone and density
+5. Compile a design brief listing: primary color, secondary color, accent color,
+   background color, heading font, body font, and overall tone.
 
-Create tokens for: 19 core colors, 8 semantic colors, 3 fonts (string type),
-6 radii, 12 spacing, 4 shadows (string type), 9 font sizes, 3 line heights.
-
-Build a 1440x2400 Foundations frame with color swatches, typography specimens,
-spacing scale, elevation examples, and border radius showcase.
-Use get_screenshot to verify.
-```
-
-**Add components to an existing design system:**
-```
-Read the current .pen file's variables with get_variables. Using those tokens, build ~25
-reusable components in a 1440x2400 Components frame. Use batch_design with max 25
-operations per call. Components: buttons (primary, secondary, outline, ghost, destructive),
-inputs (text, select, checkbox, toggle), typography (h1-h4, body), badges, alerts, cards
-(basic, stat, profile, pricing), navbar, sidebar, tabs, breadcrumb, pagination, table,
-modal, dropdown, and toast. All components must be reusable: true and reference tokens
-with $-- prefix for all colors. Verify with get_screenshot.
+STOP HERE. Show me the design brief. Do NOT proceed to tokens.
 ```
 
-**Build domain screens:**
+---
+
+### Step 2: Design Tokens
+
+> **Prerequisite:** Step 1 | **Creates:** ~64 themed variables (light + dark mode)
+
 ```
-Read the existing .pen file's components and variables. Create 3-5 domain-specific screens
-for a [YOUR DOMAIN] app to the right of existing content. Use find_empty_space_on_canvas
-to position them. Each screen should be 1440x900, use the existing reusable components via
-refs, and include realistic content. Example screens: login/signup, dashboard/home,
-[domain-specific page], settings. Verify each screen with get_screenshot.
+Read the current .pen file with get_editor_state. Load get_guidelines("design-system").
+
+Use set_variables to create ~64 themed design tokens based on the design brief
+from the previous step. Use [YOUR DOMAIN] appropriate colors and fonts.
+
+CRITICAL FORMAT — every variable needs a "type" property. Do NOT include a
+"themes" key in the variables object. Themes auto-register from usage.
+
+Themed color format:
+  "--primary": {
+    "type": "color",
+    "value": [
+      { "value": "#HEX", "theme": { "mode": "light" } },
+      { "value": "#HEX", "theme": { "mode": "dark" } }
+    ]
+  }
+
+Non-themed format:
+  "--radius-md": { "type": "number", "value": 8 }
+  "--font-primary": { "type": "string", "value": "Font Name" }
+
+Create ALL of these token categories:
+- 19 core colors: background, foreground, card, card-foreground, popover,
+  popover-foreground, primary, primary-foreground, secondary, secondary-foreground,
+  muted, muted-foreground, accent, accent-foreground, destructive,
+  destructive-foreground, border, input, ring
+- 8 semantic colors: success, warning, error, info (each with foreground)
+- 3 fonts: font-primary (string), font-secondary (string), font-mono (string)
+- 6 radii: radius-none(0), radius-sm(4), radius-md(8), radius-lg(12),
+  radius-xl(16), radius-pill(9999)
+- 12 spacing: space-1(4) through space-24(96)
+- 4 shadows: shadow-sm, shadow-md, shadow-lg, shadow-xl (string type)
+- 9 font sizes: text-xs(12) through text-5xl(48)
+- 3 line heights: leading-tight(1.25), leading-normal(1.5), leading-relaxed(1.75)
+
+After set_variables, call get_variables and verify:
+- Total token count (~64)
+- Every color token has 2 value entries (light + dark)
+
+STOP HERE. Report the token count by category. Do NOT proceed to foundations.
 ```
 
-**Export to code:**
+---
+
+### Step 3: Foundations
+
+> **Prerequisite:** Step 2 | **Creates:** Visual documentation frame (1440x2400)
+
 ```
-Read the current .pen file's variables with get_variables and components with batch_get.
+Read the .pen file state with get_editor_state and get_variables.
+
+Create a Foundations section frame at position x:0, y:0, size 1440x2400,
+with fill "#FFFFFF" (neutral white — NOT the $--background token, so all
+swatches are visible against a known reference).
+
+Inside it, build 5 documentation frames:
+1. Color Palette — grid of labeled swatches for all 27 color tokens, each
+   showing the token name and hex value as a label
+2. Typography Scale — 6 specimens (H1-H3, Body, Caption, Label) at real sizes
+   using $--font-primary and $--font-secondary
+3. Spacing Scale — 12 visual blocks showing each $--space-* value with labels
+4. Elevation — 4 cards showing shadow levels (use effect property with 8-digit
+   hex colors like #0000000D, NOT rgba)
+5. Border Radius — 6 rectangles showing each $--radius-* token
+
+Use batch_design with max 25 operations per call. All swatches use $-- token
+references for fills. After each batch, call get_screenshot to verify.
+
+STOP HERE. Show me screenshot(s) of the Foundations frame. Do NOT proceed to components.
+```
+
+---
+
+### Step 4: Components
+
+> **Prerequisite:** Step 3 | **Creates:** ~25 reusable components (1440x2400)
+
+```
+Read the .pen file with get_editor_state and get_variables. Call
+get_guidelines("design-system") if not already loaded.
+
+Create a Components section frame at x:1540, y:0, size 1440x2400,
+fill "#FFFFFF" (neutral white backdrop).
+
+Build ~25 reusable components organized by category. Use batch_design with
+max 25 operations per call. ALL components must have reusable: true and use
+$-- token references (never hardcoded colors).
+
+Category batches:
+- Batch 1: Buttons — Primary, Secondary, Outline, Ghost, Destructive (5)
+- Batch 2: Inputs — TextField, Textarea, Select, InputGroup (4)
+- Batch 3: Typography — H1, H2, H3, Body, Caption, Label (6)
+- Batch 4: Badges — Default, Success, Warning, Error (4)
+- Batch 5: Alerts — Info, Success, Warning, Error (4)
+- Batch 6: Card — Header + Content + Actions slots (1)
+- Batch 7: Navigation — Sidebar, ActiveItem, DefaultItem, SectionTitle (4)
+- Batch 8: Table — Wrapper, HeaderRow, DataRow (3)
+- Batch 9: Tabs, Breadcrumbs, Pagination (~10)
+- Batch 10: Modal, Dropdown, Misc (Avatar, Divider, Switch, Checkbox, Radio) (~10)
+
+After EVERY batch: check response for warnings, call get_screenshot, verify
+no overlapping elements. If horizontal items are stacked, the frame is missing
+layout: "horizontal" — fix before next batch.
+
+After all batches: call batch_get({ patterns: [{ reusable: true }] }) and
+count components.
+
+STOP HERE. Report component count by category and show screenshot(s).
+Do NOT proceed to patterns.
+```
+
+---
+
+### Step 5: Patterns
+
+> **Prerequisite:** Step 4 | **Creates:** 4 composition showcases (1440x1800)
+
+```
+Read the .pen file with get_editor_state. Read existing components with
+batch_get({ patterns: [{ reusable: true }], readDepth: 2 }).
+
+Create a Patterns section frame at x:3080, y:0, size 1440x1800,
+fill "#FFFFFF".
+
+Build 4 composition patterns using ONLY component ref instances and $-- tokens:
+1. Form Pattern — vertical stack of InputGroup refs + Submit button ref
+2. Data Display — Table ref with populated rows + Pagination ref
+3. Navigation Pattern — Sidebar ref + Breadcrumbs ref + Tabs ref
+4. Card Layout — grid of Card refs with realistic [YOUR DOMAIN] content
+
+Use batch_design with max 25 operations per call. After each pattern,
+call get_screenshot and verify layout.
+
+STOP HERE. Show screenshot(s) of all 4 patterns. Do NOT proceed.
+```
+
+---
+
+### Step 6: Domain Screens (optional)
+
+> **Prerequisite:** Step 5 | **Creates:** 3-5 generic domain screens
+
+```
+Read the .pen file with get_editor_state. Read components with
+batch_get({ patterns: [{ reusable: true }], readDepth: 2 }) and tokens with
+get_variables.
+
+Build 3-5 domain-appropriate screens for [YOUR DOMAIN]. For each screen:
+1. Call find_empty_space_on_canvas({ direction: "right", width: 1440,
+   height: 900, padding: 100 })
+2. Insert screen frame at returned position
+3. Build layout using existing component refs
+4. Customize content with realistic [YOUR DOMAIN] data
+5. Add domain imagery via G() where appropriate
+6. Call get_screenshot to verify
+
+Example screens for common domains:
+- Bakery: Landing, Menu, Item Detail, Cart, About
+- SaaS: Dashboard, Settings, Pricing, Login, Analytics
+- Fitness: Home, Workout Detail, Progress, Profile, Schedule
+
+STOP HERE. Show screenshot of each screen. Do NOT proceed.
+```
+
+---
+
+### Step 7: Business Logic Screens (optional)
+
+> **Prerequisite:** Step 5 or 6 | **Creates:** Screens tailored to YOUR specific requirements
+
+Paste your product requirements along with this prompt:
+
+```
+Read the .pen file with get_editor_state. Read components with
+batch_get({ patterns: [{ reusable: true }], readDepth: 2 }) and tokens with
+get_variables.
+
+Based on the following business requirements, plan and build the screens needed.
+Map each user flow or feature to a screen. Use existing reusable components via
+refs. Use batch_design with max 25 operations per call.
+
+For each screen:
+1. find_empty_space_on_canvas({ direction: "right", width: 1440, height: 900,
+   padding: 100 })
+2. Insert screen frame, build layout with component refs
+3. Add realistic content matching the business requirements
+4. get_screenshot to verify
+
+MY REQUIREMENTS:
+[PASTE YOUR USER FLOWS, FEATURE SPECS, PRD, OR WIREFRAME DESCRIPTIONS HERE]
+
+STOP HERE. Show me each screen with a description of how it maps to my
+requirements. Do NOT proceed.
+```
+
+---
+
+### Step 8: Verify + Fix
+
+> **Prerequisite:** All previous steps | **Creates:** Clean, verified system
+
+```
+Read the .pen file with get_editor_state.
+
+Run a full verification pass:
+
+1. LAYOUT ENFORCEMENT — Find all frames with gap/alignItems/justifyContent
+   properties. Ensure each has an explicit layout ("horizontal" or "vertical").
+   batch_get({ patterns: [{ type: "frame" }], searchDepth: 10, readDepth: 0 })
+   then Update any frame missing layout.
+
+2. SHADOW FIX — Check all frames with effect property. Replace any rgba()
+   shadow colors with 8-digit hex (#RRGGBBAA). Common: 5%=#0D, 7%=#12,
+   10%=#1A, 15%=#26.
+
+3. VISUAL CHECK — get_screenshot on Foundations, Components, Patterns, and
+   each screen. Check alignment, spacing, overflow.
+
+4. LAYOUT CHECK — snapshot_layout({ problemsOnly: true }). Fix any
+   clipping/overflow issues.
+
+5. TOKEN AUDIT — search_all_unique_properties for fillColor, textColor,
+   fontFamily, fontSize. Replace any leaked hex values or raw font names
+   with $-- token references.
+
+6. COMPONENT AUDIT — batch_get({ patterns: [{ reusable: true }] }). Verify
+   ~25 components exist, all under Components section (none at document root).
+
+7. RE-VERIFY — Re-screenshot any sections that were fixed.
+
+Report: total tokens, total components, sections created, any remaining issues.
+Show final screenshots.
+```
+
+---
+
+### Bonus: Code Export (optional)
+
+```
+Read tokens with get_variables and components with batch_get({ patterns:
+[{ reusable: true }], readDepth: 3 }). Call get_guidelines("code") and
+get_guidelines("tailwind").
+
 Export to Tailwind CSS v4 + React:
-1. Generate globals.css with @theme containing all CSS custom properties from the tokens
-2. Create React components matching each Pencil component (use className with Tailwind)
-3. Generate a layout.tsx with font imports and theme provider
+1. globals.css — @import "tailwindcss", @custom-variant dark, :root with
+   all tokens as CSS custom properties (hex values), .dark overrides
+2. React components — one file per category (button.tsx, input.tsx, card.tsx,
+   etc.), using Tailwind classes with var(--token) syntax
+3. layout.tsx — next/font/google loader for all 3 fonts, CSS variable setup
+
 Write all files to the project directory.
 ```
 
-### Tips for best results
+### Tips
 
-- **Be specific in prompts** — "button with 16px padding and #3B82F6 fill" beats "make a nice button"
-- **Phase your workflow** — don't ask for everything in one prompt. Do tokens first, verify, then components, verify, then screens
-- **Always verify visually** — end every phase with `get_screenshot` calls
-- **Read guidelines first** — always call `get_guidelines("design-system")` before creating anything
-- **Limit batch sizes** — keep `batch_design` calls to 25 operations max for reliability
+- **One step at a time** — paste one step, verify, then the next. Don't combine steps.
 - **Cursor users** — disable unneeded MCP servers to stay under the 40-tool limit
-- **Windsurf users** — ask Cascade to "plan first" for complex multi-step workflows
-- **Cline users** — set network timeout to 5 minutes and pre-approve Pencil tools with `alwaysAllow`
+- **Windsurf users** — ask Cascade to "plan first" for multi-step phases
+- **Cline users** — set network timeout to 5 min, pre-approve Pencil tools via `alwaysAllow`
+- **Antigravity users** — install the Pencil extension from the Extensions panel, same as VS Code
 
 ## What's included
 

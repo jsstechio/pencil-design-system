@@ -42,7 +42,9 @@ No components live at the document root except these section frames and the opti
 
 ## Workflow
 
-Execute these 10 phases in order. Each phase builds on the previous. Never skip phases. Reference files in `references/` contain detailed specs — load them as each phase begins.
+Execute these phases in order. Each phase builds on the previous. Never skip mandatory phases. Reference files in `references/` contain detailed specs — load them as each phase begins.
+
+**⛔ Verification gates** are placed after major phases. At each gate you MUST stop, show results, and wait for the user before continuing. The user controls the pace.
 
 ### Phase 1 — Research the Domain
 
@@ -85,6 +87,14 @@ Set up theme axis `{ "mode": ["light", "dark"] }`. All token values are domain-t
 
 **Post-creation verification:** After calling `set_variables`, immediately call `get_variables` and verify that every color token's values show `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}` (not `"theme":{}`). If theme mappings are missing, the `set_variables` call used the wrong format — see the CRITICAL warning in `design-tokens-reference.md`.
 
+**⛔ VERIFICATION GATE — Tokens**
+
+1. Call `get_variables` and count tokens. Expected: ~64 total.
+2. Verify every color token has 2 value entries (light + dark theme).
+3. Report to user: token count by category, any missing themes or format issues.
+4. Present options: **[c] Continue to Foundations | [r] Redo tokens | [s] Skip to final verification**
+5. **WAIT for user response. Do NOT proceed without explicit approval.**
+
 ### Phase 4 — Build Foundations (Visual Documentation)
 
 Create the Foundations section frame at the left of the canvas. Inside it, build 5 visual documentation frames:
@@ -100,6 +110,15 @@ Create the Foundations section frame at the left of the canvas. Inside it, build
 These are documentation frames, NOT reusable components. They use `$--` tokens for swatch fills everywhere. See `references/foundations-specs.md` for exact `batch_design` code (spread across 3 calls within 25-op limits).
 
 After each batch, call `get_screenshot` to verify rendering.
+
+**⛔ VERIFICATION GATE — Foundations**
+
+1. Call `get_screenshot` on the Foundations section frame.
+2. Verify all 5 documentation frames rendered: color palette, typography, spacing, elevation, radius.
+3. Check that swatches use token colors (not blank/transparent).
+4. Report to user: screenshot(s), any visual issues detected.
+5. Present options: **[c] Continue to Components | [r] Redo foundations | [s] Skip to final verification**
+6. **WAIT for user response. Do NOT proceed without explicit approval.**
 
 ### Phase 5 — Build Base Components (~15 Primitives)
 
@@ -138,6 +157,15 @@ Continue inside the Components section frame, adding category sub-frames for eac
 
 After batches 8, 11, and 14: run `get_screenshot` and `snapshot_layout({ problemsOnly: true })`. Fix issues immediately. See `references/component-specs.md`.
 
+**⛔ VERIFICATION GATE — Components**
+
+1. Call `get_screenshot` on the Components section frame.
+2. Call `batch_get({ patterns: [{ reusable: true }] })` — count reusable components. Expected: ~25.
+3. Call `snapshot_layout({ problemsOnly: true })` — check for overlapping/clipped elements.
+4. Report to user: component count by category, screenshot(s), any layout issues.
+5. Present options: **[c] Continue to Patterns | [r] Redo components | [s] Skip to final verification**
+6. **WAIT for user response. Do NOT proceed without explicit approval.**
+
 ### Phase 7 — Build Patterns (Composition Showcases)
 
 Create the Patterns section frame to the right of Components. Build 4 composition showcases that demonstrate real usage of the components:
@@ -148,6 +176,15 @@ Create the Patterns section frame to the right of Components. Build 4 compositio
 4. **Card Layout Pattern** — Grid of populated Card refs with images and domain content.
 
 Each pattern uses only `ref` instances + `$--` tokens. **After each pattern, run the Post-Batch Validation** (screenshot + check for overlapping/broken layouts). See `references/screen-patterns.md`.
+
+**⛔ VERIFICATION GATE — Patterns**
+
+1. Call `get_screenshot` on the Patterns section frame.
+2. Verify all 4 patterns rendered: form, data display, navigation, card layout.
+3. Check that patterns use component refs (not duplicated inline elements).
+4. Report to user: screenshot(s), pattern list, any issues.
+5. Present options: **[c] Continue to Screens (or skip to verification) | [r] Redo patterns | [s] Skip to final verification**
+6. **WAIT for user response. Do NOT proceed without explicit approval.**
 
 ### Phase 8 — Create Domain Screens *(only if user requests)*
 
@@ -163,6 +200,43 @@ If the user requests screens, build 3–5 placed to the right of the Patterns se
 5. Call `get_screenshot` to verify.
 
 See `references/screen-patterns.md` for domain-specific screen templates.
+
+**⛔ VERIFICATION GATE — Domain Screens** *(only if Phase 8 was executed)*
+
+1. Call `get_screenshot` on each screen frame.
+2. Check that screens use component refs and token variables.
+3. Report to user: screen list, screenshot(s), any issues.
+4. Present options: **[c] Continue to Business Logic Screens or Verification | [r] Redo screens | [s] Skip to final verification**
+5. **WAIT for user response. Do NOT proceed without explicit approval.**
+
+### Phase 8b — Business Logic Screens *(only if user provides requirements)*
+
+**Skip this phase unless the user provides specific product requirements, user flows, or feature specs.** This differs from Phase 8 (generic domain screens) — here the user supplies their actual business logic and the AI designs screens tailored to it.
+
+The user might provide:
+- User flows: "checkout: cart → address → payment → confirmation"
+- Feature specs: "CRM with contact list, deal pipeline kanban, activity timeline"
+- A PRD or user story document
+- Wireframe descriptions: "onboarding wizard with 4 steps"
+
+**Workflow:**
+1. Read existing components: `batch_get({ patterns: [{ reusable: true }], readDepth: 2 })`.
+2. Read existing tokens: `get_variables({ filePath })`.
+3. Plan screens based on user requirements — map each user flow or feature to a screen.
+4. For each screen:
+   a. Call `find_empty_space_on_canvas({ direction: "right", width: 1440, height: 900, padding: 100 })`.
+   b. Insert screen frame at returned position.
+   c. Build layout using existing component `ref` instances.
+   d. Customize content via `U(instanceId+"/descendantId", {...})` with realistic business data.
+   e. Add imagery via `G()` where appropriate.
+   f. Call `get_screenshot` to verify.
+
+**⛔ VERIFICATION GATE — Business Logic Screens**
+
+1. Call `get_screenshot` on each business logic screen.
+2. Report: screen list with descriptions, how they map to user requirements, screenshot(s).
+3. Present options: **[c] Continue to Layout Enforcement | [r] Redo screens | [s] Skip to final verification**
+4. **WAIT for user response. Do NOT proceed without explicit approval.**
 
 ### Phase 9 — Layout Enforcement Pass (MANDATORY)
 

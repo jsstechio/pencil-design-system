@@ -10,6 +10,8 @@ Layout patterns, composition showcases, and domain-specific screen templates. Lo
 
 2. **Shadow `effect` colors MUST use 8-digit hex (`#RRGGBBAA`), NOT `rgba()`.** The `rgba()` format produces NO visible shadow.
 
+3. **Text nodes with `width: "fill_container"` MUST also have `textGrowth: "fixed-width"`.** Without it, the text sizes itself to content and ignores the width entirely. Critical for table cells and form labels.
+
 ## Important Rules
 
 - Every element on a screen must be a `ref` instance of a reusable component, or a simple layout frame.

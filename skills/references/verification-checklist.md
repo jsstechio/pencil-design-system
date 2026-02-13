@@ -223,6 +223,21 @@ U("elevId", { effect: { type: "shadow", shadowType: "outer", color: "#0000001A",
 
 **Common conversions:** 5%→`#0000000D`, 7%→`#00000012`, 10%→`#0000001A`, 15%→`#00000026`, 20%→`#00000033`, 50%→`#00000080`.
 
+### Check 5d — Text Growth Mode for Fill-Container Text
+
+**Purpose:** Text nodes with `textGrowth: "auto"` (the default) ignore `width` and `height` properties, sizing themselves to content instead. Any text node that uses `width: "fill_container"` must also have `textGrowth: "fixed-width"`.
+
+**Tool:** `batch_get` on table components and any layout with text cells.
+
+**Check:** Every text node with `width: "fill_container"` must also have `textGrowth: "fixed-width"`.
+
+**Fix:**
+```javascript
+U("textNodeId", { textGrowth: "fixed-width", width: "fill_container" })
+```
+
+**Common locations:** Table header cells, table data cells, form field labels in horizontal layouts, breadcrumb text items.
+
 ### Check 6 — Organization Audit
 
 **Tool:** `batch_get({ filePath })` (list top-level document children)

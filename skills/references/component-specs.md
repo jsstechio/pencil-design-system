@@ -10,7 +10,9 @@ Exact `batch_design` operation code for all ~25 reusable components. Load this f
 
 2. **Shadow `effect` colors MUST use 8-digit hex (`#RRGGBBAA`), NOT `rgba()`.** The `rgba()` format is silently accepted but produces NO visible shadow. Use: 5%→`#0000000D`, 7%→`#00000012`, 10%→`#0000001A`, 15%→`#00000026`, 20%→`#00000033`.
 
-3. **After EVERY `batch_design` call, verify:** scan the response for "unknown properties" warnings, then spot-check with `get_screenshot` that layouts render correctly (no overlapping, no invisible shadows).
+3. **Text nodes with `width: "fill_container"` MUST also have `textGrowth: "fixed-width"`.** Without it, the default `textGrowth: "auto"` causes text to size itself to content, IGNORING the width property entirely. This is critical for table cells, form labels, and any text that should stretch to fill its parent.
+
+4. **After EVERY `batch_design` call, verify:** scan the response for "unknown properties" warnings, then spot-check with `get_screenshot` that layouts render correctly (no overlapping, no invisible shadows).
 
 ## Important Notes
 
@@ -19,7 +21,7 @@ Exact `batch_design` operation code for all ~25 reusable components. Load this f
 - Component names use slash notation: `"Button/Primary"`, `"Input/TextField"`.
 - Max 25 operations per `batch_design` call — split components across batches.
 - After each batch, call `get_screenshot` to verify rendering.
-- Text nodes should use `width: "fill_container"` to prevent overflow.
+- Text nodes should use `width: "fill_container"` to prevent overflow. **When using `width: "fill_container"` on text, also set `textGrowth: "fixed-width"`** — otherwise the width is silently ignored.
 - IDs are auto-generated — never set `id` in node data.
 - **All components are inserted inside the Components section frame** — never at `"document"` root.
 - **Use a neutral white backdrop (`fill: "#FFFFFF"`), NOT `$--background`.** The Components section is a documentation catalog — using the themed background makes light-fill variants (Ghost buttons, muted badges, secondary fills) hard to distinguish. A neutral white surface lets every component variant be evaluated accurately. Components themselves use `$--` tokens internally; only the section frame itself is neutral.
@@ -385,18 +387,18 @@ tableWrapper=I(tableCol, { type: "frame", name: "Table/Wrapper", reusable: true,
 
 ```javascript
 tableHeaderRow=I(tableCol, { type: "frame", name: "Table/HeaderRow", reusable: true, layout: "horizontal", fill: "$--muted", padding: [10, 16, 10, 16], gap: 16, width: "fill_container", height: "hug_contents" })
-tableHeaderCell1=I(tableHeaderRow, { type: "text", name: "Cell1", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textTransform: "uppercase", letterSpacing: 0.5 })
-tableHeaderCell2=I(tableHeaderRow, { type: "text", name: "Cell2", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textTransform: "uppercase", letterSpacing: 0.5 })
-tableHeaderCell3=I(tableHeaderRow, { type: "text", name: "Cell3", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textTransform: "uppercase", letterSpacing: 0.5 })
+tableHeaderCell1=I(tableHeaderRow, { type: "text", name: "Cell1", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textGrowth: "fixed-width", textTransform: "uppercase", letterSpacing: 0.5 })
+tableHeaderCell2=I(tableHeaderRow, { type: "text", name: "Cell2", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textGrowth: "fixed-width", textTransform: "uppercase", letterSpacing: 0.5 })
+tableHeaderCell3=I(tableHeaderRow, { type: "text", name: "Cell3", content: "Column", fontFamily: "$--font-secondary", fontSize: "$--text-xs", fontWeight: "600", fill: "$--muted-foreground", width: "fill_container", textGrowth: "fixed-width", textTransform: "uppercase", letterSpacing: 0.5 })
 ```
 
 ### Table/DataRow
 
 ```javascript
 tableDataRow=I(tableCol, { type: "frame", name: "Table/DataRow", reusable: true, layout: "horizontal", padding: [12, 16, 12, 16], gap: 16, width: "fill_container", height: "hug_contents", stroke: "$--border", strokeSides: ["bottom"], strokeThickness: 1 })
-tableDataCell1=I(tableDataRow, { type: "text", name: "Cell1", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground", width: "fill_container" })
-tableDataCell2=I(tableDataRow, { type: "text", name: "Cell2", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground", width: "fill_container" })
-tableDataCell3=I(tableDataRow, { type: "text", name: "Cell3", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--muted-foreground", width: "fill_container" })
+tableDataCell1=I(tableDataRow, { type: "text", name: "Cell1", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground", width: "fill_container", textGrowth: "fixed-width" })
+tableDataCell2=I(tableDataRow, { type: "text", name: "Cell2", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--foreground", width: "fill_container", textGrowth: "fixed-width" })
+tableDataCell3=I(tableDataRow, { type: "text", name: "Cell3", content: "Data", fontFamily: "$--font-secondary", fontSize: "$--text-sm", fill: "$--muted-foreground", width: "fill_container", textGrowth: "fixed-width" })
 ```
 
 **Batch 8 total: 3 category + 10 component = 13 operations**

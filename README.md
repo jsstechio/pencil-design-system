@@ -1,6 +1,6 @@
 # Pencil Design System Generator
 
-Generate a complete, production-ready design system in a Pencil `.pen` file from a single prompt like "build a design system for a bakery."
+Generate a complete, production-ready design system in a Pencil `.pen` file. In Claude Code, type `/pds coffee shop` and it builds everything conversationally. In other editors, use the step-by-step prompts.
 
 ## What it does
 
@@ -32,28 +32,30 @@ cp -r pencil-design-system-skill/skills/ .claude/skills/
 - [Pencil](https://pencil.js.org/) MCP server connected to your AI coding assistant
 - Claude Code, Cursor, Windsurf, Google Antigravity, Cline, or any MCP-compatible editor
 
-## Usage
+## Usage (Claude Code)
 
-Just tell Claude what you need:
+Type `/pds` followed by your business domain:
 
 ```
-> Create a design system for a bakery called "Golden Crust"
-> Build a design system for a SaaS analytics dashboard
-> Create a UI kit for a fitness app with dark teal and coral colors
+/pds coffee shop that sells coffee online
+/pds SaaS analytics dashboard with dark blue and orange
+/pds fitness app called "FitTrack" with teal and coral
+/pds bakery called "Golden Crust" with Playfair Display heading font
 ```
 
-The skill handles everything: domain research, token creation, component building, documentation, and verification.
+The AI runs the full workflow conversationally — researching, building, and pausing at each phase for your review. Type `c` to continue, `r` to redo with changes, or `s` to skip ahead.
 
-### Optional phases
+### Optional add-ons (during the flow)
 
-- **Screens**: "Build screens for a bakery" (adds 3-5 domain screens)
-- **Code export**: "Export to Tailwind v4 with Next.js" (generates globals.css, components, layout.tsx)
+- **Screens**: Say "add screens" when prompted, or include it upfront: `/pds bakery with screens`
+- **Business logic screens**: At any review point, paste your requirements (PRD, user flows, feature specs)
+- **Code export**: After completion, say "export to Tailwind v4 with Next.js"
 
 ---
 
-## Using with Cursor, Windsurf, and other AI editors
+## Using with Cursor, Windsurf, Antigravity, and other editors
 
-The skill file is built for Claude Code, but you can use the Pencil MCP server with **any MCP-compatible AI editor**. Just connect the Pencil MCP server and paste one of the prompts below.
+The `/pds` slash command is **Claude Code only**. For other editors, use the step-by-step prompts below — paste one step at a time, verify, then paste the next.
 
 ### Editor setup
 
@@ -568,32 +570,36 @@ Write all files to the project directory.
 
 ---
 
-## Example: Building a coffee shop design system
+## Example: Coffee shop design system
 
-Here's what a real workflow looks like in **Cursor** (works the same in Windsurf, Antigravity, Cline, or Claude Code).
+### Claude Code (`/pds` command)
 
-### 1. Paste Step 1 (replace `[YOUR DOMAIN]` with "coffee shop")
-
-**You paste:**
 ```
-You are building a design system for a coffee shop in a Pencil .pen file.
-
-1. Call get_editor_state({ include_schema: true }). If no document is active,
-   call open_document("new").
-2. Call get_guidelines("design-system").
-3. Call get_style_guide_tags(), then get_style_guide with 5-10 tags matching
-   coffee shop.
-4. Search the web for design conventions for coffee shops:
-   - Color palettes used by real coffee shop websites
-   - Font pairings (search "coffee shop website fonts 2026")
-   - UI tone and density
-5. Compile a design brief listing: primary color, secondary color, accent color,
-   background color, heading font, body font, and overall tone.
-
-STOP HERE. Show me the design brief. Do NOT proceed to tokens.
+> /pds coffee shop that sells coffee online
 ```
 
-**AI responds with something like:**
+The AI responds conversationally:
+
+```
+Pencil Design System Generator
+
+Domain: Coffee shop (online sales)
+Brand:  unnamed
+Colors: will research
+Fonts:  will research
+
+I'll build this step by step:
+ 1. Research    -> design brief
+ 2. Tokens      -> ~64 themed variables (light + dark)
+ 3. Foundations  -> visual documentation
+ 4. Components  -> ~25 reusable parts
+ 5. Patterns    -> 4 composition showcases
+
+Starting with domain research...
+```
+
+After researching, it pauses:
+
 ```
 Design Brief — Coffee Shop
 
@@ -604,96 +610,51 @@ Background: #F5F0EB (warm linen)
 Heading:    DM Serif Display
 Body:       Inter
 Tone:       Warm, artisanal, inviting
+
+[c] Continue to token creation
+[r] Redo — tell me what to change
+[s] Skip to final verification
 ```
 
-**You review:** Looks good? Type `c` or paste Step 2. Want different colors? Tell the AI "use teal instead of brown" and it redoes.
-
-### 2. Paste Step 2 (tokens)
-
-Just paste the Step 2 prompt as-is. AI creates ~64 tokens, reports back:
+Type `c` to continue. At each phase, it builds, shows results (with screenshots), and waits:
 
 ```
-✓ Created 64 tokens:
-  - 19 core colors (light + dark)
-  - 8 semantic colors
-  - 3 fonts (DM Serif Display, Inter, JetBrains Mono)
-  - 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights
-  All color tokens verified: 2 values each (light + dark themes)
+Tokens Created — 64 total
+
+| Category        | Count | Status     |
+|-----------------|-------|------------|
+| Core colors     | 19    | light+dark |
+| Semantic colors | 8     | light+dark |
+| Typography      | 3     |            |
+| Border radius   | 6     |            |
+| Spacing         | 12    |            |
+| Shadows         | 4     |            |
+| Font sizes      | 9     |            |
+| Line heights    | 3     |            |
+
+[c] Continue to Foundations
+[r] Redo — tell me what to change
+[s] Skip to final verification
 ```
 
-### 3. Paste Step 3 (foundations)
+This continues through foundations, components, and patterns. At any review point you can:
+- Type `c` to continue
+- Type `r` and describe changes (e.g., "use teal instead of brown")
+- Type `s` to skip to final verification
+- Paste business requirements to add custom screens
 
-AI builds the visual documentation. Shows you a screenshot of color swatches, typography specimens, spacing scale, elevation cards, and border radius showcase — all using your coffee shop tokens.
+### Other editors (Cursor, Windsurf, Antigravity, Cline)
 
-### 4. Paste Step 4 (components)
-
-AI builds ~25 components in batches, verifying after each. Reports:
-
-```
-✓ 25 reusable components created:
-  - Buttons: Primary, Secondary, Outline, Ghost, Destructive
-  - Inputs: TextField, Textarea, Select, InputGroup
-  - Typography: H1, H2, H3, Body, Caption, Label
-  - Badges: Default, Success, Warning, Error
-  - Alerts: Info, Success, Warning, Error
-  - Card, Sidebar Nav (4), Table (3), Tabs (3)
-  - Breadcrumbs (3), Pagination (4), Modal, Dropdown (4)
-  - Avatar, Divider, Switch, Checkbox, Radio
-```
-
-### 5. Paste Step 5 (patterns)
-
-AI creates 4 composition showcases using your components.
-
-### 6. (Optional) Paste Step 6 for generic screens
-
-Swap `[YOUR DOMAIN]` with "coffee shop" — AI creates Landing, Menu, Item Detail, Cart, About screens.
-
-### 7. (Optional) Paste Step 7 with YOUR business logic
-
-This is where it gets powerful. Paste your actual requirements:
-
-```
-Read the .pen file with get_editor_state. Read components with
-batch_get({ patterns: [{ reusable: true }], readDepth: 2 }) and tokens with
-get_variables.
-
-Based on the following business requirements, plan and build the screens needed.
-Map each user flow or feature to a screen. Use existing reusable components via
-refs. Use batch_design with max 25 operations per call.
-
-For each screen:
-1. find_empty_space_on_canvas(...)
-2. Insert screen frame, build layout with component refs
-3. Add realistic content matching the business requirements
-4. get_screenshot to verify
-
-MY REQUIREMENTS:
-- Online ordering flow: Menu browse → Item customization (size, milk, extras) →
-  Cart review → Checkout with pickup time selector
-- Loyalty program dashboard: Points balance, reward tiers, transaction history,
-  redeem rewards
-- Barista admin panel: Order queue with status (new/preparing/ready), daily
-  sales stats, inventory alerts
-
-STOP HERE. Show me each screen with a description of how it maps to my
-requirements. Do NOT proceed.
-```
-
-The AI designs screens specifically for **your** ordering flow, loyalty program, and admin panel — using the coffee shop design system components it already built.
-
-### 8. Paste Step 8 (verify + fix)
-
-Final cleanup pass. AI fixes layout issues, replaces any leaked hex colors, confirms everything is clean.
+Use the step-by-step prompts above. Paste Step 1, verify, paste Step 2, verify, etc. The workflow is the same — you just trigger each phase manually instead of typing `/pds`.
 
 ### Result
 
-You now have a complete `.pen` file with:
+You end up with a complete `.pen` file:
 - 64 themed tokens (light + dark)
 - Visual documentation (foundations)
 - 25 reusable components
 - 4 composition patterns
-- Domain screens + your custom business logic screens
+- Optional: domain screens + business logic screens
 
 All version-controlled in Git. Export to Tailwind + React with the bonus code export step.
 

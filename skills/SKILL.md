@@ -1,14 +1,12 @@
 ---
-name: pencil-design-system
+name: pds
 description: >
-  This skill should be used when the user asks to "create a design system",
-  "build a design system for [business]", "design a UI kit", "create
-  components in Pencil", "build screens for [industry]", "set up design
-  tokens", or wants to generate a comprehensive, domain-tailored design
-  system with variables, themes, reusable components, and example screens
-  in a .pen file. Also triggered by "design system from scratch", "build
-  a component library", or "create themed UI for [business type]".
-version: 1.0.0
+  Pencil Design System generator. Invoke with /pds followed by a business domain
+  (e.g., "/pds coffee shop that sells coffee online"). Creates a complete design
+  system with tokens, foundations, components, patterns, and optional screens
+  in a .pen file.
+disable-model-invocation: true
+version: 1.1.0
 license: MIT
 metadata:
   author: jsstech
@@ -17,7 +15,41 @@ metadata:
 
 # Pencil Design System Generator
 
-Generate a complete, Mews-inspired design system in a Pencil `.pen` file. Research the business domain, create ~60 themed tokens, build visual foundation documentation, ~25 reusable components organized by category, and composition patterns — all from a single prompt like "build a design system for a bakery." Domain screens are generated only if the user explicitly requests them.
+Generate a complete, Mews-inspired design system in a Pencil `.pen` file. Research the business domain, create ~60 themed tokens, build visual foundation documentation, ~25 reusable components organized by category, and composition patterns — all from a single command like `/pds coffee shop that sells coffee online`. Domain screens are generated only if the user explicitly requests them.
+
+## Getting Started
+
+When this skill is invoked via `/pds`, begin with:
+
+1. **Parse the user's input** — extract domain, brand name, color preferences, font preferences from their message after `/pds`
+2. **Greet and confirm** — show what was understood and what will be built:
+
+```
+Pencil Design System Generator
+
+Domain: [extracted domain]
+Brand:  [extracted name or "unnamed"]
+Colors: [extracted preferences or "will research"]
+Fonts:  [extracted preferences or "will research"]
+
+I'll build this step by step:
+ 1. Research    -> design brief
+ 2. Tokens      -> ~64 themed variables (light + dark)
+ 3. Foundations  -> visual documentation
+ 4. Components  -> ~25 reusable parts
+ 5. Patterns    -> 4 composition showcases
+
+Each step pauses for your review. Type:
+  c  to continue
+  r  to redo (tell me what to change)
+  s  to skip ahead to final verification
+
+Want screens too? Tell me now or add them later.
+
+Starting with domain research...
+```
+
+3. **Proceed to Phase 1** immediately — the first review pause comes after the design brief is ready.
 
 ## Input
 
@@ -44,13 +76,38 @@ No components live at the document root except these section frames and the opti
 
 Execute these phases in order. Each phase builds on the previous. Never skip mandatory phases. Reference files in `references/` contain detailed specs — load them as each phase begins.
 
-**⛔ Verification gates** are placed after major phases. At each gate you MUST stop, show results, and wait for the user before continuing. The user controls the pace.
+**⛔ Review gates** are placed after major phases. At each gate you MUST stop, show results, and wait for user input before continuing. The user controls the pace — they type `c` to continue, `r` to redo, or `s` to skip ahead.
 
 ### Phase 1 — Research the Domain
 
 Use `WebSearch` to study the domain's design conventions. Identify five pillars: color palette, typography, imagery themes, screen inventory, and UI density/tone. Document findings as a design brief.
 
 **Typography is research-driven, not table-driven.** Run specific font research queries (e.g., `"bakery website fonts 2026"`, `"best Google Fonts for bakery"`) and validate against 3–5 real websites in the domain. The font pairing table in `domain-research-guide.md` is a fallback — always prefer research-validated choices. See `references/domain-research-guide.md`.
+
+**⛔ REVIEW — Design Brief**
+
+Present the research findings as a design brief:
+
+```
+Design Brief — [Domain]
+
+Primary:    [hex] ([description])
+Secondary:  [hex] ([description])
+Accent:     [hex] ([description])
+Background: [hex] ([description])
+Heading:    [font name]
+Body:       [font name]
+Mono:       [font name]
+Tone:       [2-3 adjectives]
+
+Based on: [list 2-3 reference sites studied]
+```
+
+**[c]** Continue to token creation
+**[r]** Redo — tell me what to change (e.g., "use teal instead of brown")
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 2 — Initialize the Pencil Document
 
@@ -87,13 +144,32 @@ Set up theme axis `{ "mode": ["light", "dark"] }`. All token values are domain-t
 
 **Post-creation verification:** After calling `set_variables`, immediately call `get_variables` and verify that every color token's values show `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}` (not `"theme":{}`). If theme mappings are missing, the `set_variables` call used the wrong format — see the CRITICAL warning in `design-tokens-reference.md`.
 
-**⛔ VERIFICATION GATE — Tokens**
+**⛔ REVIEW — Tokens**
 
-1. Call `get_variables` and count tokens. Expected: ~64 total.
-2. Verify every color token has 2 value entries (light + dark theme).
-3. Report to user: token count by category, any missing themes or format issues.
-4. Present options: **[c] Continue to Foundations | [r] Redo tokens | [s] Skip to final verification**
-5. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `get_variables` and present results:
+
+```
+Tokens Created — [count] total
+
+| Category        | Count | Status      |
+|-----------------|-------|-------------|
+| Core colors     | 19    | light+dark  |
+| Semantic colors | 8     | light+dark  |
+| Typography      | 3     |             |
+| Border radius   | 6     |             |
+| Spacing         | 12    |             |
+| Shadows         | 4     |             |
+| Font sizes      | 9     |             |
+| Line heights    | 3     |             |
+
+[any warnings: missing themes, wrong format, etc.]
+```
+
+**[c]** Continue to Foundations
+**[r]** Redo — tell me what to change
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 4 — Build Foundations (Visual Documentation)
 
@@ -111,14 +187,29 @@ These are documentation frames, NOT reusable components. They use `$--` tokens f
 
 After each batch, call `get_screenshot` to verify rendering.
 
-**⛔ VERIFICATION GATE — Foundations**
+**⛔ REVIEW — Foundations**
 
-1. Call `get_screenshot` on the Foundations section frame.
-2. Verify all 5 documentation frames rendered: color palette, typography, spacing, elevation, radius.
-3. Check that swatches use token colors (not blank/transparent).
-4. Report to user: screenshot(s), any visual issues detected.
-5. Present options: **[c] Continue to Components | [r] Redo foundations | [s] Skip to final verification**
-6. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `get_screenshot` on the Foundations frame and present:
+
+```
+Foundations Complete
+
+Sections built:
+ - Color Palette (27 swatches)
+ - Typography Scale (6 specimens)
+ - Spacing Scale (12 blocks)
+ - Elevation (4 shadow levels)
+ - Border Radius (6 shapes)
+
+[screenshot]
+[any visual issues: blank swatches, overlap, clipping]
+```
+
+**[c]** Continue to Components
+**[r]** Redo — tell me what to fix
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 5 — Build Base Components (~15 Primitives)
 
@@ -157,14 +248,34 @@ Continue inside the Components section frame, adding category sub-frames for eac
 
 After batches 8, 11, and 14: run `get_screenshot` and `snapshot_layout({ problemsOnly: true })`. Fix issues immediately. See `references/component-specs.md`.
 
-**⛔ VERIFICATION GATE — Components**
+**⛔ REVIEW — Components**
 
-1. Call `get_screenshot` on the Components section frame.
-2. Call `batch_get({ patterns: [{ reusable: true }] })` — count reusable components. Expected: ~25.
-3. Call `snapshot_layout({ problemsOnly: true })` — check for overlapping/clipped elements.
-4. Report to user: component count by category, screenshot(s), any layout issues.
-5. Present options: **[c] Continue to Patterns | [r] Redo components | [s] Skip to final verification**
-6. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `batch_get({ patterns: [{ reusable: true }] })`, `get_screenshot`, and `snapshot_layout({ problemsOnly: true })`. Present:
+
+```
+Components Created — [count] reusable
+
+| Category    | Components                              | Count |
+|-------------|----------------------------------------|-------|
+| Buttons     | Primary, Secondary, Outline, Ghost, Destructive | 5 |
+| Inputs      | TextField, Textarea, Select, InputGroup | 4 |
+| Typography  | H1, H2, H3, Body, Caption, Label      | 6 |
+| Badges      | Default, Success, Warning, Error       | 4 |
+| Alerts      | Info, Success, Warning, Error          | 4 |
+| Card        | Header + Content + Actions             | 1 |
+| Navigation  | Sidebar, Active, Default, SectionTitle | 4 |
+| Table       | Wrapper, HeaderRow, DataRow            | 3 |
+| ...         | [remaining composites]                 | ... |
+
+[screenshot]
+[layout issues from snapshot_layout, if any]
+```
+
+**[c]** Continue to Patterns
+**[r]** Redo — tell me what to fix
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 7 — Build Patterns (Composition Showcases)
 
@@ -177,14 +288,27 @@ Create the Patterns section frame to the right of Components. Build 4 compositio
 
 Each pattern uses only `ref` instances + `$--` tokens. **After each pattern, run the Post-Batch Validation** (screenshot + check for overlapping/broken layouts). See `references/screen-patterns.md`.
 
-**⛔ VERIFICATION GATE — Patterns**
+**⛔ REVIEW — Patterns**
 
-1. Call `get_screenshot` on the Patterns section frame.
-2. Verify all 4 patterns rendered: form, data display, navigation, card layout.
-3. Check that patterns use component refs (not duplicated inline elements).
-4. Report to user: screenshot(s), pattern list, any issues.
-5. Present options: **[c] Continue to Screens (or skip to verification) | [r] Redo patterns | [s] Skip to final verification**
-6. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `get_screenshot` on the Patterns frame and present:
+
+```
+Patterns Complete — 4 composition showcases
+
+ 1. Form Pattern       — InputGroup refs + Submit button
+ 2. Data Display       — Table ref + Pagination ref
+ 3. Navigation Pattern — Sidebar + Breadcrumbs + Tabs refs
+ 4. Card Layout        — Grid of populated Card refs
+
+[screenshot]
+[any layout or ref issues]
+```
+
+**[c]** Continue to Screens (or skip to verification if no screens requested)
+**[r]** Redo — tell me what to fix
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 8 — Create Domain Screens *(only if user requests)*
 
@@ -201,13 +325,26 @@ If the user requests screens, build 3–5 placed to the right of the Patterns se
 
 See `references/screen-patterns.md` for domain-specific screen templates.
 
-**⛔ VERIFICATION GATE — Domain Screens** *(only if Phase 8 was executed)*
+**⛔ REVIEW — Domain Screens** *(only if Phase 8 was executed)*
 
-1. Call `get_screenshot` on each screen frame.
-2. Check that screens use component refs and token variables.
-3. Report to user: screen list, screenshot(s), any issues.
-4. Present options: **[c] Continue to Business Logic Screens or Verification | [r] Redo screens | [s] Skip to final verification**
-5. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `get_screenshot` on each screen and present:
+
+```
+Domain Screens — [count] created
+
+ 1. [Screen Name] — [brief description]
+ 2. [Screen Name] — [brief description]
+ ...
+
+[screenshots]
+[any issues: missing refs, hardcoded values, layout problems]
+```
+
+**[c]** Continue to Business Logic Screens (or verification)
+**[r]** Redo — tell me what to fix
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 8b — Business Logic Screens *(only if user provides requirements)*
 
@@ -231,12 +368,26 @@ The user might provide:
    e. Add imagery via `G()` where appropriate.
    f. Call `get_screenshot` to verify.
 
-**⛔ VERIFICATION GATE — Business Logic Screens**
+**⛔ REVIEW — Business Logic Screens**
 
-1. Call `get_screenshot` on each business logic screen.
-2. Report: screen list with descriptions, how they map to user requirements, screenshot(s).
-3. Present options: **[c] Continue to Layout Enforcement | [r] Redo screens | [s] Skip to final verification**
-4. **WAIT for user response. Do NOT proceed without explicit approval.**
+Call `get_screenshot` on each screen and present:
+
+```
+Business Logic Screens — [count] created
+
+ 1. [Screen Name] — maps to: [which user requirement/flow]
+ 2. [Screen Name] — maps to: [which user requirement/flow]
+ ...
+
+[screenshots]
+[any issues or gaps vs requirements]
+```
+
+**[c]** Continue to Layout Enforcement
+**[r]** Redo — tell me what to fix
+**[s]** Skip to final verification
+
+**WAIT for user input. Do NOT proceed.**
 
 ### Phase 9 — Layout Enforcement Pass (MANDATORY)
 

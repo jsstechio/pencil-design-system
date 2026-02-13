@@ -1,0 +1,33 @@
+{
+  "name": "pencil-design-system",
+  "version": "1.0.0",
+  "description": "Install the Pencil Design System skill across AI coding editors (Claude Code, Antigravity, Cursor, Windsurf)",
+  "type": "module",
+  "bin": {
+    "pencil-design-system": "./bin/cli.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "content",
+    "README.md"
+  ],
+  "keywords": [
+    "pencil",
+    "design-system",
+    "skill",
+    "workflow",
+    "claude-code",
+    "antigravity",
+    "cursor",
+    "windsurf",
+    "ui-kit",
+    "design-tokens"
+  ],
+  "license": "MIT",
+  "author": "jsstech",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsstechio/pencil-design-system-skill.git"
+  }
+}

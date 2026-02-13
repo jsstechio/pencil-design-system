@@ -14,46 +14,46 @@ Generate a complete, production-ready design system in a Pencil `.pen` file. In 
 
 ## Install
 
-### Quick install (Claude Code + Antigravity)
-
 ```bash
-npx skills add jsstechio/pencil-design-system-skill
+npx pencil-design-system
 ```
 
-This installs the skill to `.claude/skills/` (Claude Code) or `.agent/skills/` (Antigravity) — giving you the auto-detected skill. For the `/pds` **slash command** in Antigravity, also copy the workflow file:
+Auto-detects your editors (Claude Code, Antigravity, Cursor, Windsurf) and installs the skill, workflow, and references to each one.
 
 ```bash
-npx skills add jsstechio/pencil-design-system-skill
-git clone https://github.com/jsstechio/pencil-design-system-skill.git /tmp/pds-skill
-cp -r /tmp/pds-skill/agent/workflows/ .agent/workflows/
-cp -r /tmp/pds-skill/skills/references/ .agent/skills/pds/references/
-rm -rf /tmp/pds-skill
+# Install to a specific editor
+npx pencil-design-system --agent claude-code
+npx pencil-design-system --agent antigravity
+
+# Install to global paths (~/.claude/skills/, ~/.gemini/antigravity/, etc.)
+npx pencil-design-system --global
 ```
 
-### Manual install — Claude Code
+| Editor | What gets installed | `/pds` command |
+|--------|-------------------|----------------|
+| Claude Code | `.claude/skills/pds/` | Yes |
+| Antigravity | `.agent/skills/pds/` + `.agent/workflows/pds.md` | Yes |
+| Cursor | `.cursor/skills/pds/` | No (use [prompts](#step-by-step-workflow)) |
+| Windsurf | `.windsurf/skills/pds/` | No (use [prompts](#step-by-step-workflow)) |
 
+<details>
+<summary><strong>Manual install</strong></summary>
+
+**Claude Code:**
 ```bash
 git clone https://github.com/jsstechio/pencil-design-system-skill.git
 cp -r pencil-design-system-skill/skills/ .claude/skills/
 ```
 
-### Manual install — Google Antigravity
-
+**Google Antigravity:**
 ```bash
 git clone https://github.com/jsstechio/pencil-design-system-skill.git
 cp -r pencil-design-system-skill/agent/ .agent/
 cp -r pencil-design-system-skill/skills/references/ .agent/skills/pds/references/
 ```
 
-This installs both:
-- **`/pds` workflow** (slash command) in `.agent/workflows/`
-- **Auto-detected skill** in `.agent/skills/pds/`
-
-Then type `/pds coffee shop` in the Antigravity chat.
-
-### Other editors (Cursor, Windsurf, Cline)
-
-No slash command support yet — use the [step-by-step prompts](#step-by-step-workflow) below. Connect the Pencil MCP server and paste prompts one at a time.
+**Other editors:** Use the [step-by-step prompts](#step-by-step-workflow) below. Connect the Pencil MCP server and paste prompts one at a time.
+</details>
 
 ## Requirements
 

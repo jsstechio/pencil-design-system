@@ -14,22 +14,30 @@ Generate a complete, production-ready design system in a Pencil `.pen` file. In 
 
 ## Install
 
-### Claude Code
+### Quick install (Claude Code + Antigravity)
 
 ```bash
 npx skills add jsstechio/pencil-design-system-skill
 ```
 
-Or manually copy the `skills/` directory:
+This installs the skill to `.claude/skills/` (Claude Code) or `.agent/skills/` (Antigravity) — giving you the auto-detected skill. For the `/pds` **slash command** in Antigravity, also copy the workflow file:
+
+```bash
+npx skills add jsstechio/pencil-design-system-skill
+git clone https://github.com/jsstechio/pencil-design-system-skill.git /tmp/pds-skill
+cp -r /tmp/pds-skill/agent/workflows/ .agent/workflows/
+cp -r /tmp/pds-skill/skills/references/ .agent/skills/pds/references/
+rm -rf /tmp/pds-skill
+```
+
+### Manual install — Claude Code
 
 ```bash
 git clone https://github.com/jsstechio/pencil-design-system-skill.git
 cp -r pencil-design-system-skill/skills/ .claude/skills/
 ```
 
-### Google Antigravity
-
-Copy the `agent/` directory into your project root as `.agent/`, plus the reference files:
+### Manual install — Google Antigravity
 
 ```bash
 git clone https://github.com/jsstechio/pencil-design-system-skill.git
@@ -45,7 +53,7 @@ Then type `/pds coffee shop` in the Antigravity chat.
 
 ### Other editors (Cursor, Windsurf, Cline)
 
-No slash command — use the [step-by-step prompts](#step-by-step-workflow) below. Just connect the Pencil MCP server and paste prompts one at a time.
+No slash command support yet — use the [step-by-step prompts](#step-by-step-workflow) below. Connect the Pencil MCP server and paste prompts one at a time.
 
 ## Requirements
 

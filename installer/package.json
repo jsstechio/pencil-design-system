@@ -28,5 +28,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jsstechio/pencil-design-system-skill.git"
+  },
+  "dependencies": {
+    "collectui-mcp": "^1.0.0"
   }
 }

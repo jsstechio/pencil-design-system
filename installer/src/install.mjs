@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, cpSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, cpSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +7,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT = join(__dirname, '..', 'dist');
 const HOME = homedir();
 
+const COLLECTUI_MCP = {
+  command: 'npx',
+  args: ['-y', 'collectui-mcp'],
+};
+
 const AGENTS = {
   'claude-code': {
     name: 'Claude Code',
@@ -14,6 +19,7 @@ const AGENTS = {
     projectDir: '.claude/skills/pds',
     globalDir: join(HOME, '.claude', 'skills', 'pds'),
     content: 'claude-code',
+    mcpGlobal: join(HOME, '.claude', '.mcp.json'),
   },
   'antigravity': {
     name: 'Antigravity',
@@ -30,6 +36,7 @@ const AGENTS = {
     projectDir: '.cursor/skills/pds',
     globalDir: join(HOME, '.cursor', 'skills', 'pds'),
     content: 'universal',
+    mcpGlobal: join(HOME, '.cursor', 'mcp.json'),
   },
   'windsurf': {
     name: 'Windsurf',
@@ -37,6 +44,7 @@ const AGENTS = {
     projectDir: '.windsurf/skills/pds',
     globalDir: join(HOME, '.codeium', 'windsurf', 'skills', 'pds'),
     content: 'universal',
+    mcpGlobal: join(HOME, '.codeium', 'windsurf', 'mcp_config.json'),
   },
 };
 
@@ -57,6 +65,30 @@ function parseArgs(args) {
 function copyDir(src, dest) {
   mkdirSync(dest, { recursive: true });
   cpSync(src, dest, { recursive: true });
+}
+
+function configureMcp(agent) {
+  if (!agent.mcpGlobal) return null;
+  const configPath = agent.mcpGlobal;
+
+  let config = {};
+  if (existsSync(configPath)) {
+    try {
+      config = JSON.parse(readFileSync(configPath, 'utf-8'));
+    } catch {
+      config = {};
+    }
+  }
+
+  if (!config.mcpServers) config.mcpServers = {};
+
+  // Skip if already configured
+  if (config.mcpServers.collectui) return 'exists';
+
+  config.mcpServers.collectui = COLLECTUI_MCP;
+  mkdirSync(dirname(configPath), { recursive: true });
+  writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+  return configPath;
 }
 
 function installForAgent(agentId, agent, global) {
@@ -84,6 +116,18 @@ function installForAgent(agentId, agent, global) {
       cpSync(workflowSrc, join(wfDir, 'pds.md'));
       installed.push(`  /pds   -> ${global ? agent.workflowGlobalDir : agent.workflowProjectDir}/pds.md`);
     }
+  }
+
+  // Configure collectui-mcp MCP server
+  try {
+    const mcpResult = configureMcp(agent);
+    if (mcpResult === 'exists') {
+      installed.push(`  mcp    -> collectui already configured`);
+    } else if (mcpResult) {
+      installed.push(`  mcp    -> collectui added to ${mcpResult}`);
+    }
+  } catch (err) {
+    installed.push(`  mcp    -> skipped (${err.message})`);
   }
 
   return installed;

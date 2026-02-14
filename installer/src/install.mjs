@@ -2,10 +2,12 @@ import { existsSync, mkdirSync, cpSync, readFileSync, writeFileSync } from 'node
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { multiSelect, singleSelect, banner } from './prompt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT = join(__dirname, '..', 'dist');
 const HOME = homedir();
+const VERSION = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8')).version;
 
 const COLLECTUI_MCP = {
   command: 'npx',
@@ -50,7 +52,7 @@ const AGENTS = {
 };
 
 function parseArgs(args) {
-  const opts = { agents: [], global: false, help: false };
+  const opts = { agents: [], global: false, help: false, interactive: false };
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--agent' || args[i] === '-a') {
       opts.agents.push(args[++i]);
@@ -82,8 +84,6 @@ function configureMcp(agent) {
   }
 
   if (!config.mcpServers) config.mcpServers = {};
-
-  // Skip if already configured
   if (config.mcpServers.collectui) return 'exists';
 
   config.mcpServers.collectui = COLLECTUI_MCP;
@@ -98,61 +98,105 @@ function installForAgent(agentId, agent, global) {
   const refsDir = join(CONTENT, 'references');
   const installed = [];
 
-  // Copy SKILL.md
   mkdirSync(skillDir, { recursive: true });
   cpSync(join(contentDir, 'SKILL.md'), join(skillDir, 'SKILL.md'));
-  installed.push(`  skill  -> ${global ? agent.globalDir : agent.projectDir}/SKILL.md`);
+  installed.push(`    skill  → ${global ? agent.globalDir : agent.projectDir}/SKILL.md`);
 
-  // Copy references
   const refsTarget = join(skillDir, 'references');
   copyDir(refsDir, refsTarget);
-  installed.push(`  refs   -> ${global ? agent.globalDir : agent.projectDir}/references/`);
+  installed.push(`    refs   → ${global ? agent.globalDir : agent.projectDir}/references/`);
 
-  // Copy workflow (Antigravity only)
   if (agent.workflowProjectDir) {
     const workflowSrc = join(contentDir, 'workflow.md');
     if (existsSync(workflowSrc)) {
       const wfDir = global ? agent.workflowGlobalDir : join(process.cwd(), agent.workflowProjectDir);
       mkdirSync(wfDir, { recursive: true });
       cpSync(workflowSrc, join(wfDir, 'pds.md'));
-      installed.push(`  /pds   -> ${global ? agent.workflowGlobalDir : agent.workflowProjectDir}/pds.md`);
+      installed.push(`    /pds   → ${global ? agent.workflowGlobalDir : agent.workflowProjectDir}/pds.md`);
     }
   }
 
-  // Configure collectui-mcp MCP server
   try {
     const mcpResult = configureMcp(agent);
     if (mcpResult === 'exists') {
-      installed.push(`  mcp    -> collectui already configured`);
+      installed.push(`    mcp    → collectui already configured`);
     } else if (mcpResult) {
-      installed.push(`  mcp    -> collectui added to ${mcpResult}`);
+      installed.push(`    mcp    → collectui added to ${mcpResult}`);
     }
   } catch (err) {
-    installed.push(`  mcp    -> skipped (${err.message})`);
+    installed.push(`    mcp    → skipped (${err.message})`);
   }
 
   return installed;
 }
 
-export function install(args) {
+function runInstall(targets, global) {
+  const scope = global ? 'global' : 'project';
+  console.log(`  Installing to ${targets.length} editor(s) (${scope}):\n`);
+
+  for (const id of targets) {
+    const agent = AGENTS[id];
+    console.log(`  \x1B[1m${agent.name}\x1B[0m`);
+    try {
+      const lines = installForAgent(id, agent, global);
+      lines.forEach(l => console.log(l));
+    } catch (err) {
+      console.log(`    error: ${err.message}`);
+    }
+    console.log();
+  }
+
+  console.log('  \x1B[32m✔\x1B[0m Done! Type \x1B[1m/pds\x1B[0m in your editor to get started.\n');
+}
+
+async function interactiveInstall() {
+  banner(VERSION);
+
+  // Build choices with detection hints
+  const editorChoices = Object.entries(AGENTS).map(([id, agent]) => {
+    const detected = agent.detect();
+    return {
+      label: agent.name,
+      value: id,
+      checked: detected,
+      hint: detected ? 'detected' : undefined,
+    };
+  });
+
+  const selectedEditors = await multiSelect('Select editors to install:', editorChoices);
+
+  if (selectedEditors.length === 0) {
+    console.log('  No editors selected. Nothing to install.\n');
+    return;
+  }
+
+  const scope = await singleSelect('Install scope:', [
+    { label: 'Project', value: 'project', hint: '(current directory)', checked: true },
+    { label: 'Global', value: 'global', hint: '(~/.claude, ~/.gemini, etc.)' },
+  ]);
+
+  runInstall(selectedEditors, scope === 'global');
+}
+
+export async function install(args) {
   const opts = parseArgs(args);
 
   if (opts.help) {
     console.log(`
-  pencil-design-system — Install the PDS skill across AI editors
+  \x1B[1mpencil-design-system\x1B[0m — Install the PDS skill across AI editors
 
-  Usage:
-    npx pencil-design-system                   Auto-detect and install
+  \x1B[1mUsage:\x1B[0m
+    npx pencil-design-system                   Interactive mode (recommended)
     npx pencil-design-system -a claude-code    Install to specific editor
     npx pencil-design-system -a antigravity    Install to Antigravity
     npx pencil-design-system --global          Install to global paths
 
-  Options:
+  \x1B[1mOptions:\x1B[0m
     -a, --agent <name>   Target editor (claude-code, antigravity, cursor, windsurf)
     -g, --global         Install to global paths (~/.claude/, ~/.gemini/, etc.)
     -h, --help           Show this help
 
-  Supported editors:
+  \x1B[1mSupported editors:\x1B[0m
     claude-code    .claude/skills/pds/          + /pds slash command
     antigravity    .agent/skills/pds/           + .agent/workflows/pds.md
     cursor         .cursor/skills/pds/
@@ -161,42 +205,36 @@ export function install(args) {
     return;
   }
 
-  console.log('\n  Pencil Design System Installer\n');
-
-  // Detect or use specified agents
-  let targets;
+  // Non-interactive mode: --agent flag provided
   if (opts.agents.length > 0) {
-    targets = opts.agents.filter(a => AGENTS[a]);
+    const targets = opts.agents.filter(a => AGENTS[a]);
     const unknown = opts.agents.filter(a => !AGENTS[a]);
     if (unknown.length) {
-      console.log(`  Unknown agent(s): ${unknown.join(', ')}`);
+      console.log(`\n  Unknown editor(s): ${unknown.join(', ')}`);
       console.log(`  Available: ${Object.keys(AGENTS).join(', ')}\n`);
     }
-  } else {
-    targets = Object.keys(AGENTS).filter(id => AGENTS[id].detect());
-    if (targets.length === 0) {
-      console.log('  No editors detected. Use --agent to specify:\n');
-      console.log('    npx pencil-design-system --agent claude-code');
-      console.log('    npx pencil-design-system --agent antigravity\n');
-      console.log(`  Available: ${Object.keys(AGENTS).join(', ')}\n`);
-      return;
+    if (targets.length > 0) {
+      console.log(`\n  \x1B[1mPencil Design System Installer\x1B[0m v${VERSION}\n`);
+      runInstall(targets, opts.global);
     }
+    return;
   }
 
-  const scope = opts.global ? 'global' : 'project';
-  console.log(`  Installing to ${targets.length} editor(s) (${scope}):\n`);
-
-  for (const id of targets) {
-    const agent = AGENTS[id];
-    console.log(`  ${agent.name}`);
-    try {
-      const lines = installForAgent(id, agent, opts.global);
-      lines.forEach(l => console.log(l));
-    } catch (err) {
-      console.log(`  error: ${err.message}`);
-    }
-    console.log();
+  // Interactive mode: no flags, TTY available
+  if (process.stdin.isTTY) {
+    await interactiveInstall();
+    return;
   }
 
-  console.log('  Done! Type /pds in your editor to get started.\n');
+  // Fallback: non-TTY, auto-detect
+  console.log(`\n  \x1B[1mPencil Design System Installer\x1B[0m v${VERSION}\n`);
+  const targets = Object.keys(AGENTS).filter(id => AGENTS[id].detect());
+  if (targets.length === 0) {
+    console.log('  No editors detected. Use --agent to specify:\n');
+    console.log('    npx pencil-design-system --agent claude-code');
+    console.log('    npx pencil-design-system --agent antigravity\n');
+    console.log(`  Available: ${Object.keys(AGENTS).join(', ')}\n`);
+    return;
+  }
+  runInstall(targets, opts.global);
 }

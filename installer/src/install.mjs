@@ -29,6 +29,7 @@ const AGENTS = {
     workflowProjectDir: '.agent/workflows',
     workflowGlobalDir: join(HOME, '.gemini', 'antigravity', 'global_workflows'),
     content: 'antigravity',
+    mcpGlobal: join(HOME, '.gemini', 'antigravity', 'mcp_config.json'),
   },
   'cursor': {
     name: 'Cursor',

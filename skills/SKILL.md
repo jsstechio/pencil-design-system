@@ -163,6 +163,8 @@ Call `set_variables` to create the full token system (~60 tokens). Every color, 
 | Font sizes | 9 | `--text-xs` (12) through `--text-5xl` (48) |
 | Line heights | 3 | `--leading-tight` (1.25), `--leading-normal` (1.5), `--leading-relaxed` (1.75) |
 
+**Semantic colors MUST be derived from the primary palette.** Match the temperature (warm/cool), saturation, and lightness of your primary/accent colors. Do NOT use default Tailwind green/amber/red/blue (`#22C55E`, `#F59E0B`, `#EF4444`, `#3B82F6`). A warm muted palette needs warm muted semantics (sage green, golden amber, terracotta red, dusty blue). A cool vivid palette needs cool vivid semantics (teal-green, gold, crimson, blue). See `references/design-tokens-reference.md` for the derivation algorithm and per-industry examples.
+
 **CRITICAL — Exact `set_variables` format.** Copy this structure exactly. Do NOT deviate.
 
 CORRECT format for **color tokens** (themed — light + dark):

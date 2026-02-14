@@ -77,16 +77,35 @@ These 19 tokens form the color foundation. Every component uses only these token
 
 ### Semantic Color Tokens
 
-| Token | Role | Light | Dark |
-|-------|------|-------|------|
-| `--color-success` | Success state | `#22C55E` | `#4ADE80` |
-| `--color-success-foreground` | Text on success | `#FFFFFF` | `#052E16` |
-| `--color-warning` | Warning state | `#F59E0B` | `#FBBF24` |
-| `--color-warning-foreground` | Text on warning | `#FFFFFF` | `#451A03` |
-| `--color-error` | Error state | `#EF4444` | `#F87171` |
-| `--color-error-foreground` | Text on error | `#FFFFFF` | `#450A0A` |
-| `--color-info` | Info state | `#3B82F6` | `#60A5FA` |
-| `--color-info-foreground` | Text on info | `#FFFFFF` | `#172554` |
+**CRITICAL: Semantic colors are DERIVED from the primary palette — NOT hardcoded defaults.**
+
+Do NOT use generic Tailwind colors (`#22C55E`, `#F59E0B`, `#EF4444`, `#3B82F6`). Instead, derive semantic colors by matching three properties of the primary palette:
+
+**1. Temperature** — Warm primary (brown, terracotta, orange)? Shift semantic hues warm. Cool primary (blue, teal, purple)? Shift cool. Neutral (black, gray)? Keep standard hues but desaturate.
+
+**2. Saturation** — Match the primary's saturation level. Muted primary (S<40%) → muted semantics. Vivid primary (S>65%) → vibrant semantics. This is the most important rule — never pair a muted earthy palette with electric neon semantics.
+
+**3. Lightness** — Match the palette's lightness range. Dark/moody palette → deeper semantics. Light/airy → lighter.
+
+**Quick reference by palette type:**
+
+| Palette Type | Success | Warning | Error | Info |
+|---|---|---|---|---|
+| **Warm + Muted** (coffee, bakery) | Sage `#6B8F5E` | Golden amber `#C48B3F` | Terracotta `#C2564A` | Dusty steel `#5B8BA5` |
+| **Cool + Vivid** (SaaS, tech) | Teal-green `#22B07A` | Warm gold `#E5A030` | Crimson `#E04558` | Blue `#4B8FE5` |
+| **Warm + Vivid** (fitness, food) | Warm green `#3BA55D` | Rich amber `#E8A020` | Warm red `#D94040` | Medium blue `#4A90D9` |
+| **Neutral + Minimal** (agency) | Muted sage `#4CA771` | Muted amber `#C49545` | Muted red `#C55050` | Muted blue `#5080B5` |
+
+Each industry palette table below includes domain-specific semantic colors. Use those as starting points, then fine-tune to match the actual primary palette you researched.
+
+| Token | Role |
+|-------|------|
+| `--color-success` / `--color-success-foreground` | Success state + text |
+| `--color-warning` / `--color-warning-foreground` | Warning state + text |
+| `--color-error` / `--color-error-foreground` | Error state + text |
+| `--color-info` / `--color-info-foreground` | Info state + text |
+
+For foreground colors: use `#FFFFFF` on dark backgrounds, derive dark foregrounds by deeply darkening the semantic hue (e.g., success-foreground dark = very dark green `#0A2E1A`).
 
 ### Typography Tokens
 
@@ -312,14 +331,14 @@ Use this template as the base. Replace domain-specific values (marked with `<<<`
         { "value": "<<<primary dark>>>", "theme": { "mode": "dark" } }
       ]
     },
-    "--color-success": { "type": "color", "value": [{ "value": "#22C55E", "theme": { "mode": "light" } }, { "value": "#4ADE80", "theme": { "mode": "dark" } }] },
-    "--color-success-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#052E16", "theme": { "mode": "dark" } }] },
-    "--color-warning": { "type": "color", "value": [{ "value": "#F59E0B", "theme": { "mode": "light" } }, { "value": "#FBBF24", "theme": { "mode": "dark" } }] },
-    "--color-warning-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#451A03", "theme": { "mode": "dark" } }] },
-    "--color-error": { "type": "color", "value": [{ "value": "#EF4444", "theme": { "mode": "light" } }, { "value": "#F87171", "theme": { "mode": "dark" } }] },
-    "--color-error-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#450A0A", "theme": { "mode": "dark" } }] },
-    "--color-info": { "type": "color", "value": [{ "value": "#3B82F6", "theme": { "mode": "light" } }, { "value": "#60A5FA", "theme": { "mode": "dark" } }] },
-    "--color-info-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "#172554", "theme": { "mode": "dark" } }] },
+    "--color-success": { "type": "color", "value": [{ "value": "<<<success — derived from palette>>>", "theme": { "mode": "light" } }, { "value": "<<<success light — lighter variant>>>", "theme": { "mode": "dark" } }] },
+    "--color-success-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "<<<deep dark success>>>", "theme": { "mode": "dark" } }] },
+    "--color-warning": { "type": "color", "value": [{ "value": "<<<warning — derived from palette>>>", "theme": { "mode": "light" } }, { "value": "<<<warning light>>>", "theme": { "mode": "dark" } }] },
+    "--color-warning-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "<<<deep dark warning>>>", "theme": { "mode": "dark" } }] },
+    "--color-error": { "type": "color", "value": [{ "value": "<<<error — derived from palette>>>", "theme": { "mode": "light" } }, { "value": "<<<error light>>>", "theme": { "mode": "dark" } }] },
+    "--color-error-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "<<<deep dark error>>>", "theme": { "mode": "dark" } }] },
+    "--color-info": { "type": "color", "value": [{ "value": "<<<info — derived from palette>>>", "theme": { "mode": "light" } }, { "value": "<<<info light>>>", "theme": { "mode": "dark" } }] },
+    "--color-info-foreground": { "type": "color", "value": [{ "value": "#FFFFFF", "theme": { "mode": "light" } }, { "value": "<<<deep dark info>>>", "theme": { "mode": "dark" } }] },
     "--font-primary": {
       "type": "string",
       "value": "<<<display font>>>"
@@ -385,6 +404,10 @@ Card: #FFFFFF (light) / #2D2218 (dark)
 Secondary: #F5E6D3 (light) / #3D2E1E (dark)
 Muted: #F0E4D4 (light) / #261E14 (dark)
 Accent: #CD5C5C (light) / #E88E8E (dark)
+Success: #7A9B5A (light) / #A3C27E (dark) — olive sage
+Warning: #C4913A (light) / #D9B06A (dark) — golden honey
+Error: #B85C4A (light) / #D48A78 (dark) — brick red
+Info: #6B8EA8 (light) / #92B5CC (dark) — dusty blue
 Font primary: Playfair Display
 Font secondary: Nunito
 ```
@@ -398,6 +421,10 @@ Card: #FFFFFF (light) / #1E293B (dark)
 Secondary: #F1F5F9 (light) / #334155 (dark)
 Muted: #F8FAFC (light) / #1E293B (dark)
 Accent: #7C3AED (light) / #A78BFA (dark)
+Success: #16A368 (light) / #34D399 (dark) — teal-green
+Warning: #D97B0A (light) / #F5B642 (dark) — warm gold
+Error: #DC3B4F (light) / #F87171 (dark) — crimson
+Info: #4B8FE5 (light) / #7CB3F5 (dark) — harmonic blue
 Font primary: Inter
 Font secondary: Inter
 ```
@@ -411,6 +438,10 @@ Card: #FFFFFF (light) / #1C1917 (dark)
 Secondary: #F5F5F4 (light) / #292524 (dark)
 Muted: #F5F5F4 (light) / #1C1917 (dark)
 Accent: #84CC16 (light) / #A3E635 (dark)
+Success: #3BA55D (light) / #5CCC80 (dark) — warm green
+Warning: #E8A020 (light) / #F5C04A (dark) — rich amber
+Error: #D94040 (light) / #F06060 (dark) — warm red
+Info: #4A90D9 (light) / #70B0F0 (dark) — medium blue
 Font primary: Oswald
 Font secondary: Roboto
 ```
@@ -424,6 +455,10 @@ Card: #FFFFFF (light) / #18181B (dark)
 Secondary: #F4F4F5 (light) / #27272A (dark)
 Muted: #F4F4F5 (light) / #27272A (dark)
 Accent: #F59E0B (light) / #FBBF24 (dark)
+Success: #20A86A (light) / #4CD89A (dark) — cool teal-green
+Warning: #D9920A (light) / #F0B840 (dark) — golden
+Error: #DC4055 (light) / #F07080 (dark) — cool red
+Info: #5570D0 (light) / #8098E8 (dark) — violet-blue (matches purple primary)
 Font primary: Poppins
 Font secondary: Open Sans
 ```
@@ -437,6 +472,10 @@ Card: #FFFFFF (light) / #1A1A24 (dark)
 Secondary: #F0F0F5 (light) / #2A2A38 (dark)
 Muted: #F5F5F8 (light) / #1E1E2A (dark)
 Accent: #FFD700 (light) / #FFE066 (dark)
+Success: #2D8F6F (light) / #50B898 (dark) — deep teal
+Warning: #C89030 (light) / #E0B060 (dark) — muted gold
+Error: #B04050 (light) / #D06878 (dark) — burgundy red
+Info: #4060A8 (light) / #6888CC (dark) — navy-harmonic blue
 Font primary: Cormorant Garamond
 Font secondary: Lato
 ```
@@ -450,6 +489,10 @@ Card: #FFFFFF (light) / #2C221E (dark)
 Secondary: #EFEBE9 (light) / #3E2723 (dark)
 Muted: #EFEBE9 (light) / #2C221E (dark)
 Accent: #E65100 (light) / #FF8A65 (dark)
+Success: #6B8F5E (light) / #92B880 (dark) — sage green
+Warning: #C48B3F (light) / #D9AE6A (dark) — golden amber
+Error: #C2564A (light) / #D88078 (dark) — terracotta red
+Info: #5B8BA5 (light) / #82ACC2 (dark) — dusty steel blue
 Font primary: DM Serif Display
 Font secondary: Inter
 ```
@@ -463,6 +506,10 @@ Card: #FFFFFF (light) / #132028 (dark)
 Secondary: #F0FDFA (light) / #1A3038 (dark)
 Muted: #F0FDFA (light) / #132028 (dark)
 Accent: #38BDF8 (light) / #7DD3FC (dark)
+Success: #1A9A6C (light) / #40C898 (dark) — teal-harmonic green
+Warning: #D0952A (light) / #E8B850 (dark) — warm gold
+Error: #CC4455 (light) / #E87080 (dark) — clean crimson
+Info: #3090C0 (light) / #58B0E0 (dark) — sky blue (matches teal family)
 Font primary: Outfit
 Font secondary: Inter
 ```
@@ -476,6 +523,10 @@ Card: #FFFFFF (light) / #1C1917 (dark)
 Secondary: #F0FDF9 (light) / #292524 (dark)
 Muted: #FFF7ED (light) / #1C1917 (dark)
 Accent: #F97316 (light) / #FB923C (dark)
+Success: #2A9E70 (light) / #50CC98 (dark) — friendly green
+Warning: #D99020 (light) / #F0B848 (dark) — warm amber
+Error: #D04858 (light) / #E87080 (dark) — soft crimson
+Info: #3888C0 (light) / #60AAE0 (dark) — sky blue
 Font primary: Quicksand
 Font secondary: Nunito
 ```
@@ -489,6 +540,10 @@ Card: #FFFFFF (light) / #1A1D27 (dark)
 Secondary: #EDF2F7 (light) / #2D3748 (dark)
 Muted: #F7FAFC (light) / #1A1D27 (dark)
 Accent: #B8860B (light) / #DAA520 (dark)
+Success: #2E8B6A (light) / #50B890 (dark) — professional teal-green
+Warning: #C89535 (light) / #E0B860 (dark) — muted gold
+Error: #B84050 (light) / #D86878 (dark) — subdued red
+Info: #3868A8 (light) / #6090CC (dark) — navy-harmonic blue
 Font primary: Merriweather
 Font secondary: Open Sans
 ```
@@ -502,6 +557,10 @@ Card: #FFFFFF (light) / #171717 (dark)
 Secondary: #F5F5F5 (light) / #262626 (dark)
 Muted: #F5F5F5 (light) / #1A1A1A (dark)
 Accent: #3B82F6 (light) / #60A5FA (dark)
+Success: #4CA771 (light) / #70CC98 (dark) — muted sage
+Warning: #C49545 (light) / #D8B870 (dark) — muted amber
+Error: #C55050 (light) / #D87878 (dark) — muted red
+Info: #5080B5 (light) / #78A8D8 (dark) — muted blue
 Font primary: Space Grotesk
 Font secondary: Inter
 ```
@@ -635,6 +694,33 @@ When the user provides specific colors (e.g., "build a bakery design system with
    - `--foreground`: Near-black for light themes, near-white for dark
    - `--card`: White for light, darkened background for dark
 3. **Dark theme:** Lighten the primary by 20–30%, darken the background to near-black, invert foreground/muted-foreground.
+
+### Deriving Semantic Colors from the Palette
+
+**Never use generic Tailwind defaults.** Semantic colors must visually belong to the same design system as the primary palette.
+
+**Step 1 — Classify the palette:**
+- **Temperature**: Is the primary warm (brown, terracotta, orange, red — hues 0-60, 300-360) or cool (blue, teal, purple — hues 120-270) or neutral (black/gray, S<10%)?
+- **Saturation**: Is the primary vivid (S>65%), moderate (30-65%), or muted (S<30%)?
+- **Lightness**: Is the overall feel dark/moody (L<35%), medium, or light/airy (L>60%)?
+
+**Step 2 — Apply the rules:**
+
+| Rule | How |
+|------|-----|
+| Warm palette | Shift green toward sage/olive (+15° hue), shift blue toward teal (-20° hue), keep red warm |
+| Cool palette | Shift green toward teal (-15° hue), keep blue in family, shift red toward crimson |
+| Neutral palette | Keep standard hues but reduce saturation by 30-40% |
+| Muted primary (S<40%) | Reduce semantic saturation to match — never exceed primary's S by more than 15% |
+| Vivid primary (S>65%) | Semantic colors can stay vivid (S 60-80%) |
+| Dark/moody palette | Deepen semantic lightness by 10-15% |
+| Light/airy palette | Lighten semantic colors by 10-15% |
+
+**Step 3 — Dark mode variants:** Lighten the derived light-mode semantic color by 15-25% for dark mode. Dark-mode foregrounds should be deeply darkened versions of the semantic hue (e.g., success foreground dark = `#0A2E1A`).
+
+**Step 4 — Verify contrast:** Each semantic color must have ≥4.5:1 contrast ratio with its foreground.
+
+See the industry palette tables above for concrete examples matching each domain.
 
 ### Handling User-Specified Fonts
 

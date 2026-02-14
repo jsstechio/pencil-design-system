@@ -54,6 +54,8 @@ CORRECT — non-color tokens: `{ "type": "number", "value": [{ "value": 6 }] }`
 
 WRONG: `"theme": {}` (empty), `"themes"` key in variables, `"values"` (plural).
 
+**Semantic colors MUST be derived from the primary palette** — match temperature, saturation, lightness. Do NOT use default Tailwind green/amber/red/blue. See `references/design-tokens-reference.md` for examples.
+
 After `set_variables`, call `get_variables` — every color MUST show `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}`. If any show `"theme":{}`, redo.
 
 See `references/design-tokens-reference.md` for full payload.

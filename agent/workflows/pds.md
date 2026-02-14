@@ -74,6 +74,8 @@ WRONG — these break theming:
 
 Token categories: 19 core colors, 8 semantic colors, 3 fonts, 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights.
 
+**Semantic colors MUST be derived from the primary palette** — match temperature (warm/cool), saturation, and lightness. Do NOT use default Tailwind green/amber/red/blue. Warm muted palette → sage green, golden amber, terracotta red, dusty blue. Cool vivid palette → teal-green, gold, crimson, harmonic blue.
+
 **After `set_variables`, call `get_variables` and verify EVERY color token shows `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}`.** If ANY color shows `"theme":{}` (empty), the format was wrong — redo before continuing.
 
 **REVIEW** — Show token count by category, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.

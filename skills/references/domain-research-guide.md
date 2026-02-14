@@ -263,7 +263,7 @@ After completing research, compile findings in this format before proceeding to 
 - Accent: [hex] — [psychology]
 - Background light: [hex]
 - Background dark: [hex]
-- Semantic: success=#22C55E, warning=#F59E0B, error=#EF4444, info=#3B82F6
+- Semantic: [derive from palette — match temperature, saturation, lightness of primary. See design-tokens-reference.md]
 
 ### Typography
 - Display: [font name] — [rationale]

@@ -89,7 +89,15 @@ Create Foundations section frame with `width: 1440, height: "fit_content", layou
 4. Elevation (4 shadow cards) — single horizontal row
 5. Border Radius (6 shapes) — single horizontal row
 
-All swatches use `$--` token fills. Use `batch_design` with max 25 ops per call. Call `get_screenshot` after each batch.
+All swatches use `$--` token fills. Use `batch_design` with max 25 ops per call.
+
+**⚠ MANDATORY — Post-Batch Validation (after EVERY `batch_design` call throughout ALL phases):**
+1. Call `get_screenshot` on the section you just modified.
+2. **STOP and analyze the screenshot.** Check for: overlapping/garbled text, elements stacked on top of each other, clipped content, invisible elements (same color as background), missing layout causing horizontal items to stack vertically.
+3. Call `snapshot_layout({ problemsOnly: true, parentId: "sectionId" })` to detect clipping/overflow.
+4. **If ANY issue is found: FIX IT BEFORE continuing to the next batch.** Do not proceed with broken layouts.
+5. If horizontal items appear stacked, the frame is missing `layout: "horizontal"` — add it.
+6. If text is garbled/overlapping, the text node needs `width: "fill_container"` or `textGrowth: "auto-width"`.
 
 **REVIEW** — Show screenshot, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 
@@ -99,19 +107,21 @@ Create Components section frame at x:1540 with `width: 1440, height: "fit_conten
 
 All components: `reusable: true`, `$--` tokens only, `"Category/Variant"` naming.
 
-**Batch 1 — Buttons (5):** Primary, Secondary, Outline, Ghost, Destructive. Each: frame with text + optional icon, `layout: "horizontal"`, `cornerRadius: "$--radius-md"`. Call `get_screenshot`.
+After EVERY batch below, run the **Post-Batch Validation** (screenshot → analyze → snapshot_layout → fix before continuing).
 
-**Batch 2 — Inputs (4):** TextField, Textarea, Select, InputGroup (label + input). Each: frame with border, placeholder text. Call `get_screenshot`.
+**Batch 1 — Buttons (5):** Primary, Secondary, Outline, Ghost, Destructive. Each: frame with text + optional icon, `layout: "horizontal"`, `cornerRadius: "$--radius-md"`. **Validate.**
 
-**Batch 3 — Typography (6):** H1, H2, H3, Body, Caption, Label. Text nodes with `$--text-*` and `$--font-*` tokens. Call `get_screenshot`.
+**Batch 2 — Inputs (4):** TextField, Textarea, Select, InputGroup (label + input). Each: frame with border, placeholder text. **Validate.**
 
-**Batch 4 — Badges + Alerts (8):** Badge/Default, Badge/Success, Badge/Warning, Badge/Error, Alert/Info, Alert/Success, Alert/Warning, Alert/Error. Call `get_screenshot`.
+**Batch 3 — Typography (6):** H1, H2, H3, Body, Caption, Label. Text nodes with `$--text-*` and `$--font-*` tokens. **Validate.**
 
-**Batch 5 — Card + Navigation (5):** Card (header+content+actions), Sidebar container, NavItem/Active, NavItem/Default, Nav/SectionTitle. Call `get_screenshot`.
+**Batch 4 — Badges + Alerts (8):** Badge/Default, Badge/Success, Badge/Warning, Badge/Error, Alert/Info, Alert/Success, Alert/Warning, Alert/Error. **Validate.**
 
-**Batch 6 — Table + Tabs + Breadcrumbs (9):** Table/Wrapper, Table/HeaderRow, Table/DataRow, Tabs/Container, Tabs/Active, Tabs/Inactive, Breadcrumbs/Item, Breadcrumbs/Separator, Breadcrumbs/Active. Call `get_screenshot`.
+**Batch 5 — Card + Navigation (5):** Card (header+content+actions), Sidebar container, NavItem/Active, NavItem/Default, Nav/SectionTitle. **Validate.**
 
-**Batch 7 — Pagination + Modal + Misc (10):** Pagination/Container, Pagination/Page, Pagination/Active, Pagination/PrevNext, Modal/Dialog, Dropdown/Container, Dropdown/Item, Avatar, Switch, Divider. Call `get_screenshot`.
+**Batch 6 — Table + Tabs + Breadcrumbs (9):** Table/Wrapper, Table/HeaderRow, Table/DataRow, Tabs/Container, Tabs/Active, Tabs/Inactive, Breadcrumbs/Item, Breadcrumbs/Separator, Breadcrumbs/Active. **Validate.**
+
+**Batch 7 — Pagination + Modal + Misc (10):** Pagination/Container, Pagination/Page, Pagination/Active, Pagination/PrevNext, Modal/Dialog, Dropdown/Container, Dropdown/Item, Avatar, Switch, Divider. **Validate.**
 
 After ALL batches: verify with `batch_get({ patterns: [{ reusable: true }] })`. Must show ~25+ components.
 
@@ -131,6 +141,8 @@ Create Patterns section frame with `width: 1440, height: "fit_content", layout: 
 - Insert frame FIRST, then apply `G()` — images are fills on frames
 
 **Every frame MUST have explicit `layout: "horizontal"` or `layout: "vertical"`.** Sidebars and nav containers are ALWAYS vertical.
+
+After each pattern, run the **Post-Batch Validation** (screenshot → analyze → fix before continuing).
 
 **REVIEW** — Show screenshot, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 

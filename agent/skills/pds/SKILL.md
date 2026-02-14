@@ -69,20 +69,28 @@ Foundations frame with `width: 1440, height: "fit_content", layout: "vertical", 
 
 See `references/foundations-specs.md`.
 
+**⚠ MANDATORY — Post-Batch Validation (after EVERY `batch_design` call in ALL phases):**
+1. `get_screenshot` on the section just modified.
+2. **STOP and analyze the screenshot.** Check for: overlapping/garbled text, stacked items that should be side-by-side, clipped content, invisible elements.
+3. `snapshot_layout({ problemsOnly: true, parentId: "sectionId" })`.
+4. **Fix ALL issues BEFORE continuing.** Missing `layout: "horizontal"` → add it. Garbled text → add `width: "fill_container"`.
+
 **REVIEW** — Show screenshot. Wait for user input.
 
 ### Phase 5 — Build Components (~25)
 Components frame with `width: 1440, height: "fit_content", layout: "vertical", fill: "#FFFFFF"`. Build ~25 reusable components in explicit batches. **Complete ALL batches — do NOT stop early.**
 
-1. Buttons (5): Primary, Secondary, Outline, Ghost, Destructive
-2. Inputs (4): TextField, Textarea, Select, InputGroup
-3. Typography (6): H1, H2, H3, Body, Caption, Label
-4. Badges+Alerts (8): 4 badge variants + 4 alert variants
-5. Card+Navigation (5): Card, Sidebar, NavItem/Active, NavItem/Default, Nav/SectionTitle
-6. Table+Tabs+Breadcrumbs (9): 3 table + 3 tabs + 3 breadcrumb parts
-7. Remaining (10): Pagination (4), Modal, Dropdown (2), Avatar, Switch, Divider
+After EVERY batch, run the **Post-Batch Validation** above.
 
-All components: `reusable: true`, `$--` tokens only. `get_screenshot` after each batch. See `references/component-specs.md`.
+1. Buttons (5): Primary, Secondary, Outline, Ghost, Destructive. **Validate.**
+2. Inputs (4): TextField, Textarea, Select, InputGroup. **Validate.**
+3. Typography (6): H1, H2, H3, Body, Caption, Label. **Validate.**
+4. Badges+Alerts (8): 4 badge variants + 4 alert variants. **Validate.**
+5. Card+Navigation (5): Card, Sidebar, NavItem/Active, NavItem/Default, Nav/SectionTitle. **Validate.**
+6. Table+Tabs+Breadcrumbs (9): 3 table + 3 tabs + 3 breadcrumb parts. **Validate.**
+7. Remaining (10): Pagination (4), Modal, Dropdown (2), Avatar, Switch, Divider. **Validate.**
+
+All components: `reusable: true`, `$--` tokens only. See `references/component-specs.md`.
 
 **REVIEW** — Show component count and screenshot. Wait for user input.
 
@@ -96,6 +104,8 @@ Patterns frame with `width: 1440, height: "fit_content", layout: "vertical"`. Bu
 **Every frame MUST have explicit `layout`.** Sidebars are ALWAYS `layout: "vertical"`.
 
 **Images:** Use `G()` for domain visuals — card images: `G(frame, "stock", "[domain keyword]")`, avatars: `G(frame, "stock", "portrait")`. Insert frame first, then apply `G()`.
+
+After each pattern, run the **Post-Batch Validation**.
 
 See `references/screen-patterns.md`.
 

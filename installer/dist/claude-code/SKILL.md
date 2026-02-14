@@ -134,7 +134,7 @@ Based on: [list 2-3 reference sites studied]
 
 1. Call `get_editor_state({ include_schema: true })`. Check the response for an active `.pen` file.
    - **If a `.pen` file IS already open:** Use it. Do NOT call `open_document`. Note the `filePath`.
-   - **If NO `.pen` file is open:** Create a named file: `open_document("[domain]-design-system.pen")` (e.g., `open_document("coffee-shop-design-system.pen")`). Use the domain from the user's input, kebab-cased. Do NOT use `open_document("new")` — always provide a descriptive filename.
+   - **If NO `.pen` file is open:** Create a named file in the **current working directory**: `open_document("./[domain]-design-system.pen")` (e.g., `open_document("./coffee-shop-design-system.pen")`). Always prefix the filename with `./` to save in the user's project folder. Do NOT use `open_document("new")` — always provide a descriptive filename with a path.
    - **NEVER create a second document.** Only ONE `.pen` file should exist.
 3. Call `get_guidelines({ topic: "design-system" })`.
 4. Call `get_style_guide_tags()` then `get_style_guide({ tags: [...] })` with 5–10 domain-matching tags.

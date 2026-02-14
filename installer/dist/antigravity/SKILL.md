@@ -29,7 +29,7 @@ If a reference image exists (on canvas, in chat, or URL), analyze it first — e
 **REVIEW** — Show design brief. Wait for user input.
 
 ### Phase 2 — Initialize Pencil Document
-1. `get_editor_state({ include_schema: true })` — if a `.pen` file is already open, use it (do NOT create another). If NO document is open, create a named file: `open_document("[domain]-design-system.pen")`. Do NOT use `"new"`.
+1. `get_editor_state({ include_schema: true })` — if a `.pen` file is already open, use it (do NOT create another). If NO document is open, create a named file in the **current working directory**: `open_document("./[domain]-design-system.pen")`. Always prefix with `./` to save in the user's project folder. Do NOT use `"new"`.
 2. `get_guidelines({ topic: "design-system" })`
 3. `get_style_guide_tags()` then `get_style_guide({ tags: [...] })`
 4. `get_variables({ filePath })` — check for existing tokens

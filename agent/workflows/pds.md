@@ -32,7 +32,7 @@ At each **REVIEW** point, the user will type `c` (continue), `r` (redo), or `s` 
 
 1. Call `get_editor_state({ include_schema: true })`. Check the response for an active `.pen` file.
    - **If a `.pen` file IS already open:** Use it. Do NOT call `open_document`. Note the `filePath`.
-   - **If NO `.pen` file is open:** Create a named file: `open_document("[domain]-design-system.pen")` (e.g., `"coffee-shop-design-system.pen"`). Use the domain from user input, kebab-cased. Do NOT use `"new"`.
+   - **If NO `.pen` file is open:** Create a named file in the **current working directory**: `open_document("./[domain]-design-system.pen")` (e.g., `"./coffee-shop-design-system.pen"`). Always prefix the filename with `./` to save in the user's project folder. Do NOT use `"new"`.
    - **NEVER create a second document.** Only ONE `.pen` file should exist.
 2. Call `get_guidelines({ topic: "design-system" })`.
 3. Call `get_style_guide_tags()` then `get_style_guide({ tags: [...] })` with 5-10 domain tags.

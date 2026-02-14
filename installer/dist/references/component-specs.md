@@ -38,7 +38,7 @@ Exact `batch_design` operation code for all ~25 reusable components. Load this f
 Before building any components, create the Components master frame and category sub-frames. This frame is positioned to the right of the Foundations section (x: 1540, y: 0).
 
 ```javascript
-componentsSection=I("document", { type: "frame", name: "Components", width: 1440, height: 2400, x: 1540, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "#FFFFFF" })
+componentsSection=I("document", { type: "frame", name: "Components", width: 1440, height: "fit_content", x: 1540, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "#FFFFFF" })
 componentsSectionTitle=I(componentsSection, { type: "text", content: "Components", fontFamily: "$--font-primary", fontSize: "$--text-5xl", fontWeight: "700", fill: "$--foreground" })
 componentsSectionSubtitle=I(componentsSection, { type: "text", content: "Reusable UI building blocks", fontFamily: "$--font-secondary", fontSize: "$--text-lg", fill: "$--muted-foreground", width: "fill_container" })
 ```

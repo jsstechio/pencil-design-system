@@ -11,6 +11,16 @@ description: >
 
 Generate a complete design system in a Pencil `.pen` file. Research the business domain, create ~64 themed tokens (light + dark), build visual foundation documentation, ~25 reusable components, and 4 composition patterns.
 
+## ⛔ GOLDEN RULES — Read These First
+
+These rules prevent the #1 visual bug (overlapping elements). **Violating any of these produces a broken design.**
+
+1. **EVERY frame MUST have `layout: "vertical"` or `layout: "horizontal"`.** No exceptions. Without it, children overlap at (0,0).
+2. **Category display rows MUST use `layout: "horizontal"`.** Components shown side-by-side need a horizontal row frame.
+3. **Use `height: "fit_content"` on section frames** — never fixed pixel heights.
+4. **After EVERY `batch_design`, screenshot and CHECK for overlap.** Missing `layout` → add it immediately.
+5. **Copy exact operation code from reference files.** Do NOT improvise layout code.
+
 ## Getting Started
 
 1. **Parse the user's input** — extract domain, brand name, color preferences, font preferences, reference image
@@ -80,15 +90,22 @@ See `references/foundations-specs.md`.
 ### Phase 5 — Build Components (~25)
 Components frame with `width: 1440, height: "fit_content", layout: "vertical", fill: "#FFFFFF"`. Build ~25 reusable components in explicit batches. **Complete ALL batches — do NOT stop early.**
 
+**⚠ CRITICAL STRUCTURE FOR EACH BATCH:**
+1. Create a **category frame** (`layout: "vertical"`, `width: "fill_container"`) inside Components section
+2. Add a category title text
+3. Create a **display row** (`layout: "horizontal"`, `gap: 16`, `width: "fill_container"`) inside the category
+4. Insert components into the display row — NOT directly into the Components section
+5. **If elements overlap after batch_design, the parent frame is missing `layout` — fix immediately**
+
 After EVERY batch, run the **Post-Batch Validation** above.
 
-1. Buttons (5): Primary, Secondary, Outline, Ghost, Destructive. **Validate.**
-2. Inputs (4): TextField, Textarea, Select, InputGroup. **Validate.**
-3. Typography (6): H1, H2, H3, Body, Caption, Label. **Validate.**
-4. Badges+Alerts (8): 4 badge variants + 4 alert variants. **Validate.**
-5. Card+Navigation (5): Card, Sidebar, NavItem/Active, NavItem/Default, Nav/SectionTitle. **Validate.**
-6. Table+Tabs+Breadcrumbs (9): 3 table + 3 tabs + 3 breadcrumb parts. **Validate.**
-7. Remaining (10): Pagination (4), Modal, Dropdown (2), Avatar, Switch, Divider. **Validate.**
+1. Buttons (5): Category (vertical) → Row (horizontal) → 5 buttons. Each: `layout: "horizontal"`. **Validate.**
+2. Inputs (4): Category (vertical) → Row (horizontal) → 4 inputs. Each: `layout: "vertical"`. **Validate.**
+3. Typography (6): Category (vertical) → 6 text components stacked. **Validate.**
+4. Badges+Alerts (8): Category (vertical) → Badges row (horizontal) → Alerts row (vertical). **Validate.**
+5. Card+Navigation (5): Category (vertical) → Row (horizontal). Card: `layout: "vertical"`. Sidebar: `layout: "vertical"`. **Validate.**
+6. Table+Tabs+Breadcrumbs (9): Category (vertical) → sub-rows. Containers: `layout: "vertical"` or `"horizontal"`. **Validate.**
+7. Remaining (10): Category (vertical) → display rows (horizontal) → components. **Validate.**
 
 All components: `reusable: true`, `$--` tokens only. See `references/component-specs.md`.
 

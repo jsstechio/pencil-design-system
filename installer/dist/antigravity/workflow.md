@@ -6,6 +6,17 @@ description: Generate a complete Pencil design system with tokens, foundations, 
 
 Generate a complete design system in a Pencil `.pen` file. This workflow runs step by step, pausing at each phase for your review.
 
+## ⛔ GOLDEN RULES — Read These First
+
+These rules prevent the #1 visual bug (overlapping elements). **Violating any of these produces a broken design.**
+
+1. **EVERY frame MUST have `layout: "vertical"` or `layout: "horizontal"`.** No exceptions. Without `layout`, children are placed at absolute position (0,0) and overlap each other. This includes: section frames, category rows, component root frames, card bodies, nav containers, form groups — ALL frames.
+2. **NEVER create a frame without `layout`.** Before every `I()` call that creates a frame, ask yourself: "Does this have `layout`?" If not, add it.
+3. **Category display rows MUST use `layout: "horizontal"`.** Buttons, badges, and cards shown side-by-side need a horizontal row frame.
+4. **Use `height: "fit_content"` on section frames** — never fixed pixel heights. Fixed heights cause content to clip or overflow.
+5. **After EVERY `batch_design` call, take a screenshot and CHECK for overlapping elements.** If anything overlaps, the parent frame is missing `layout` — fix it immediately.
+6. **Copy the exact operation code from the reference files.** Do NOT improvise layout code. The reference files have tested, working `batch_design` operations.
+
 ## Input
 
 Parse the user's message for: business domain, brand name, color preferences, font preferences, **reference image**. If only a domain is given, research everything else. If a reference image is provided (on canvas, in chat, or as URL), it becomes the primary design input.
@@ -107,21 +118,27 @@ Create Components section frame at x:1540 with `width: 1440, height: "fit_conten
 
 All components: `reusable: true`, `$--` tokens only, `"Category/Variant"` naming.
 
-After EVERY batch below, run the **Post-Batch Validation** (screenshot → analyze → snapshot_layout → fix before continuing).
+**⚠ CRITICAL STRUCTURE FOR EACH BATCH:**
+1. Create a **category frame** inside the Components section: `layout: "vertical"`, `width: "fill_container"`
+2. Add a category title text
+3. Create a **display row** inside the category: `layout: "horizontal"`, `gap: 16`, `width: "fill_container"`
+4. Insert components into the display row — NOT directly into the Components section
 
-**Batch 1 — Buttons (5):** Primary, Secondary, Outline, Ghost, Destructive. Each: frame with text + optional icon, `layout: "horizontal"`, `cornerRadius: "$--radius-md"`. **Validate.**
+After EVERY batch below, run the **Post-Batch Validation** (screenshot → analyze → snapshot_layout → fix before continuing). **If elements overlap, the parent frame is missing `layout` — fix immediately.**
 
-**Batch 2 — Inputs (4):** TextField, Textarea, Select, InputGroup (label + input). Each: frame with border, placeholder text. **Validate.**
+**Batch 1 — Buttons (5):** Create `buttonsCategory` (vertical) → `buttonsRow` (horizontal) → insert 5 buttons. Each button: `reusable: true`, `layout: "horizontal"`, `cornerRadius: "$--radius-md"`. **Validate.**
 
-**Batch 3 — Typography (6):** H1, H2, H3, Body, Caption, Label. Text nodes with `$--text-*` and `$--font-*` tokens. **Validate.**
+**Batch 2 — Inputs (4):** Create `inputsCategory` (vertical) → `inputsRow` (horizontal) → insert 4 inputs. Each: `reusable: true`, `layout: "vertical"`, border, placeholder. **Validate.**
 
-**Batch 4 — Badges + Alerts (8):** Badge/Default, Badge/Success, Badge/Warning, Badge/Error, Alert/Info, Alert/Success, Alert/Warning, Alert/Error. **Validate.**
+**Batch 3 — Typography (6):** Create `typographyCategory` (vertical) → insert 6 text components vertically. Each: `reusable: true`, `$--text-*` and `$--font-*` tokens. **Validate.**
 
-**Batch 5 — Card + Navigation (5):** Card (header+content+actions), Sidebar container, NavItem/Active, NavItem/Default, Nav/SectionTitle. **Validate.**
+**Batch 4 — Badges + Alerts (8):** Create `badgesCategory` (vertical) → `badgesRow` (horizontal) for 4 badges → `alertsRow` (vertical) for 4 alerts. Each: `reusable: true`. **Validate.**
 
-**Batch 6 — Table + Tabs + Breadcrumbs (9):** Table/Wrapper, Table/HeaderRow, Table/DataRow, Tabs/Container, Tabs/Active, Tabs/Inactive, Breadcrumbs/Item, Breadcrumbs/Separator, Breadcrumbs/Active. **Validate.**
+**Batch 5 — Card + Navigation (5):** Create `cardsCategory` (vertical) → `cardsRow` (horizontal) → Card + nav components. Card: `layout: "vertical"`. Sidebar: `layout: "vertical"`. **Validate.**
 
-**Batch 7 — Pagination + Modal + Misc (10):** Pagination/Container, Pagination/Page, Pagination/Active, Pagination/PrevNext, Modal/Dialog, Dropdown/Container, Dropdown/Item, Avatar, Switch, Divider. **Validate.**
+**Batch 6 — Table + Tabs + Breadcrumbs (9):** Create `tableCategory` (vertical) → table, tabs, breadcrumbs. Each container: `layout: "vertical"` or `"horizontal"` as appropriate. **Validate.**
+
+**Batch 7 — Pagination + Modal + Misc (10):** Create `miscCategory` (vertical) → display rows (horizontal) → insert remaining components. **Validate.**
 
 After ALL batches: verify with `batch_get({ patterns: [{ reusable: true }] })`. Must show ~25+ components.
 

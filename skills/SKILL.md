@@ -17,6 +17,16 @@ metadata:
 
 Generate a complete, Mews-inspired design system in a Pencil `.pen` file. Research the business domain, create ~60 themed tokens, build visual foundation documentation, ~25 reusable components organized by category, and composition patterns — all from a single command like `/pds coffee shop that sells coffee online`. Domain screens are generated only if the user explicitly requests them.
 
+## ⛔ GOLDEN RULES — Read These First
+
+These rules prevent the #1 visual bug (overlapping elements). **Violating any of these produces a broken design.**
+
+1. **EVERY frame MUST have `layout: "vertical"` or `layout: "horizontal"`.** No exceptions. Without it, children are placed at absolute position (0,0) and overlap each other. This includes: section frames, category rows, component root frames, card bodies, nav containers — ALL frames.
+2. **Category display rows MUST use `layout: "horizontal"`.** Components shown side-by-side need a horizontal row frame.
+3. **Use `height: "fit_content"` on section frames** — never fixed pixel heights.
+4. **After EVERY `batch_design`, take a screenshot and CHECK for overlapping elements.** Missing `layout` → add it immediately.
+5. **Copy the exact operation code from the reference files.** Do NOT improvise layout code.
+
 ## Getting Started
 
 When this skill is invoked via `/pds`, begin with:
@@ -282,22 +292,29 @@ Sections built:
 
 ### Phase 5 — Build Base Components (~15 Primitives)
 
-Create the Components section frame to the right of Foundations with `width: 1440, height: "fit_content", layout: "vertical", fill: "#FFFFFF"` (same neutral backdrop rationale as Foundations — light-fill variants like Ghost buttons and muted badges need a known white reference). **Do NOT use fixed heights** — use `height: "fit_content"`. Inside it, create category sub-frames with titles and display rows. Insert components under their category frame — NOT at document root.
+Create the Components section frame to the right of Foundations with `width: 1440, height: "fit_content", layout: "vertical", fill: "#FFFFFF"` (same neutral backdrop rationale as Foundations — light-fill variants like Ghost buttons and muted badges need a known white reference). **Do NOT use fixed heights** — use `height: "fit_content"`.
+
+**⚠ CRITICAL STRUCTURE FOR EACH BATCH:**
+1. Create a **category frame** (`layout: "vertical"`, `width: "fill_container"`) inside Components section
+2. Add a category title text
+3. Create a **display row** (`layout: "horizontal"`, `gap: 16`, `width: "fill_container"`) inside the category
+4. Insert components into the display row — NOT directly into the Components section
+5. **If elements overlap after batch_design, the parent frame is missing `layout` — fix immediately**
 
 | Batch | Category | Components | Count |
 |-------|----------|-----------|-------|
-| 1 | Buttons | Primary, Secondary, Outline, Ghost, Destructive | 5 |
-| 2 | Inputs | TextField, Textarea, Select, InputGroup | 4 |
-| 3 | Typography | H1, H2, H3, Body, Caption, Label | 6 |
-| 4 | Badges | Default, Success, Warning, Error | 4 |
-| 5 | Alerts | Info, Success, Warning, Error | 4 |
+| 1 | Buttons | Category (vertical) → Row (horizontal) → Primary, Secondary, Outline, Ghost, Destructive | 5 |
+| 2 | Inputs | Category (vertical) → Row (horizontal) → TextField, Textarea, Select, InputGroup | 4 |
+| 3 | Typography | Category (vertical) → H1, H2, H3, Body, Caption, Label stacked | 6 |
+| 4 | Badges | Category (vertical) → Row (horizontal) → Default, Success, Warning, Error | 4 |
+| 5 | Alerts | Category (vertical) → Info, Success, Warning, Error stacked | 4 |
 
 Every component has `reusable: true`, uses only `$--` tokens, and follows `"Category/Variant"` naming. See `references/component-specs.md`.
 
 **MANDATORY — Post-Batch Validation (after EVERY batch_design call):**
 1. Check the batch response for "unknown properties were ignored" warnings — fix immediately.
 2. Call `get_screenshot` on the affected section — visually confirm no overlapping elements, no invisible shadows, no broken layouts.
-3. If ANY horizontal arrangement shows items stacked/overlapping, the frame is missing `layout: "horizontal"`. Fix it before proceeding to the next batch.
+3. **If ANY elements overlap or stack on top of each other, the parent frame is missing `layout: "horizontal"` or `layout: "vertical"`.** Fix it before proceeding to the next batch.
 
 ### Phase 6 — Build Composite Components (~10 Composites)
 

@@ -20,7 +20,7 @@ These frames are **documentation, not components** — they do NOT have `reusabl
 Before building any documentation frames, create the master section frame. This is the first frame on the canvas.
 
 ```javascript
-foundations=I("document", { type: "frame", name: "Foundations", width: 1440, height: 2400, x: 0, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "#FFFFFF" })
+foundations=I("document", { type: "frame", name: "Foundations", width: 1440, height: "fit_content", x: 0, y: 0, layout: "vertical", padding: [60, 80, 60, 80], gap: 48, fill: "#FFFFFF" })
 foundationsTitle=I(foundations, { type: "text", content: "Foundations", fontFamily: "$--font-primary", fontSize: 48, fontWeight: "700", fill: "$--foreground" })
 foundationsSubtitle=I(foundations, { type: "text", content: "Design tokens and visual language", fontFamily: "$--font-secondary", fontSize: 18, fill: "$--muted-foreground", width: "fill_container" })
 ```

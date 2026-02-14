@@ -9,7 +9,7 @@ description: >
 
 # Pencil Design System Generator
 
-Generate a complete design system in a Pencil `.pen` file. Research the business domain, create ~64 themed tokens (light + dark), build visual foundation documentation, ~25 reusable components, and 4 composition patterns.
+Generate a complete design system in a Pencil `.pen` file. Research the business domain, create ~89 themed tokens (light + dark), build visual foundation documentation, ~25 reusable components, and 4 composition patterns.
 
 ## ⛔ GOLDEN RULES — Read These First
 
@@ -54,7 +54,7 @@ Call `get_editor_state({ include_schema: true })`. Look at the `filePath` in the
 **Step 3** — `get_style_guide_tags()` then `get_style_guide({ tags: [...] })`
 **Step 4** — `get_variables({ filePath })` — check for existing tokens
 
-### Phase 3 — Create Design Tokens (~64)
+### Phase 3 — Create Design Tokens (~89)
 Call `set_variables` with all tokens. CRITICAL — use this exact format:
 
 CORRECT — color tokens (themed):
@@ -166,7 +166,7 @@ See `references/verification-checklist.md`.
 
 - `references/pencil-mcp-guide.md` — Pencil MCP tool reference
 - `references/domain-research-guide.md` — Research strategies, font pairings
-- `references/design-tokens-reference.md` — Token architecture, ~64 definitions
+- `references/design-tokens-reference.md` — Token architecture, ~89 definitions
 - `references/foundations-specs.md` — Foundation documentation specs
 - `references/component-specs.md` — Component batch_design code
 - `references/screen-patterns.md` — Layout patterns, screen templates

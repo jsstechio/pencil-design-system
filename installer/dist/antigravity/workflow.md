@@ -58,7 +58,7 @@ Call `get_editor_state({ include_schema: true })`. Read the response carefully. 
 
 ### Phase 3 — Create Design Tokens
 
-Call `set_variables` to create ~64 themed tokens. Every color, font, radius, spacing, shadow, font size, and line height is a variable.
+Call `set_variables` to create ~89 themed tokens. Every color, font, radius, spacing, shadow, font size, line height, font weight, letter spacing, sizing, opacity, and border width is a variable.
 
 **CRITICAL — Exact format. Copy this structure. Do NOT deviate.**
 
@@ -90,7 +90,7 @@ WRONG — these break theming:
 { "values": [...] }                          // "values" plural = wrong key
 ```
 
-Token categories: 19 core colors, 8 semantic colors, 3 fonts, 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights.
+Token categories: 19 core colors, 8 semantic colors, 3 fonts, 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights, 6 font weights, 4 letter spacing, 9 sizing, 3 opacity, 3 border widths. **Total: ~89 tokens.**
 
 **Semantic colors MUST be derived from the primary palette** — match temperature (warm/cool), saturation, and lightness. Do NOT use default Tailwind green/amber/red/blue. Warm muted palette → sage green, golden amber, terracotta red, dusty blue. Cool vivid palette → teal-green, gold, crimson, harmonic blue.
 

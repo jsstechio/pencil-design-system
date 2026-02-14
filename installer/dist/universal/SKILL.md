@@ -20,6 +20,7 @@ These rules prevent the #1 visual bug (overlapping elements). **Violating any of
 3. **Use `height: "fit_content"` on section frames** — never fixed pixel heights.
 4. **After EVERY `batch_design`, screenshot and CHECK for overlap.** Missing `layout` → add it immediately.
 5. **Copy exact operation code from reference files.** Do NOT improvise layout code.
+6. **NEVER call `open_document("new")`.** Always check `get_editor_state` first — if a `.pen` file exists, use it.
 
 ## Getting Started
 
@@ -39,10 +40,19 @@ If a reference image exists (on canvas, in chat, or URL), analyze it first — e
 **REVIEW** — Show design brief. Wait for user input.
 
 ### Phase 2 — Initialize Pencil Document
-1. `get_editor_state({ include_schema: true })` — if a `.pen` file is already open, use it (do NOT create another). If NO document is open, create a named file in the **current working directory**: `open_document("./[domain]-design-system.pen")`. Always prefix with `./` to save in the user's project folder. Do NOT use `"new"`.
-2. `get_guidelines({ topic: "design-system" })`
-3. `get_style_guide_tags()` then `get_style_guide({ tags: [...] })`
-4. `get_variables({ filePath })` — check for existing tokens
+
+**Step 1 — CHECK for existing document FIRST:**
+Call `get_editor_state({ include_schema: true })`. Look at the `filePath` in the response.
+
+**⛔ STOP AND DECIDE:**
+- **If `filePath` contains ANY `.pen` file:** USE IT. Do NOT call `open_document`. The document is already open.
+- **ONLY if `filePath` is empty/null:** Create: `open_document("./[domain]-design-system.pen")`.
+- **NEVER call `open_document("new")`** — this creates a generic file that ignores the existing one.
+- **NEVER call `open_document` if a `.pen` file is already open.**
+
+**Step 2** — `get_guidelines({ topic: "design-system" })`
+**Step 3** — `get_style_guide_tags()` then `get_style_guide({ tags: [...] })`
+**Step 4** — `get_variables({ filePath })` — check for existing tokens
 
 ### Phase 3 — Create Design Tokens (~64)
 Call `set_variables` with all tokens. CRITICAL — use this exact format:

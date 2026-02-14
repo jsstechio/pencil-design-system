@@ -26,6 +26,7 @@ These rules prevent the #1 visual bug (overlapping elements). **Violating any of
 3. **Use `height: "fit_content"` on section frames** — never fixed pixel heights.
 4. **After EVERY `batch_design`, take a screenshot and CHECK for overlapping elements.** Missing `layout` → add it immediately.
 5. **Copy the exact operation code from the reference files.** Do NOT improvise layout code.
+6. **NEVER call `open_document("new")`.** Always check `get_editor_state` first — if a `.pen` file exists, use it.
 
 ## Getting Started
 
@@ -142,13 +143,19 @@ Based on: [list 2-3 reference sites studied]
 
 ### Phase 2 — Initialize the Pencil Document
 
-1. Call `get_editor_state({ include_schema: true })`. Check the response for an active `.pen` file.
-   - **If a `.pen` file IS already open:** Use it. Do NOT call `open_document`. Note the `filePath`.
-   - **If NO `.pen` file is open:** Create a named file in the **current working directory**: `open_document("./[domain]-design-system.pen")` (e.g., `open_document("./coffee-shop-design-system.pen")`). Always prefix the filename with `./` to save in the user's project folder. Do NOT use `open_document("new")` — always provide a descriptive filename with a path.
-   - **NEVER create a second document.** Only ONE `.pen` file should exist.
-3. Call `get_guidelines({ topic: "design-system" })`.
-4. Call `get_style_guide_tags()` then `get_style_guide({ tags: [...] })` with 5–10 domain-matching tags.
-5. Call `get_variables({ filePath })` to check for existing tokens.
+**Step 1 — CHECK for an existing document FIRST:**
+Call `get_editor_state({ include_schema: true })`. Read the response carefully. Look at the `filePath` field.
+
+**⛔ STOP AND DECIDE — do NOT skip this check:**
+- **If `filePath` contains a `.pen` file** (e.g., `design.pen`, `project.pen`, anything ending in `.pen`): **USE THAT FILE. Do NOT call `open_document` at all.** The document is already open. Save the `filePath` for all subsequent calls.
+- **ONLY if `filePath` is empty/null/undefined** (meaning NO `.pen` file is open): Create a named file: `open_document("./[domain]-design-system.pen")`. Always prefix with `./`.
+
+**NEVER call `open_document("new")`.** This creates a generic `pencil-new.pen` that ignores the existing file.
+**NEVER call `open_document` if a `.pen` file is already open.** This creates a SECOND document.
+
+**Step 2** — Call `get_guidelines({ topic: "design-system" })`.
+**Step 3** — Call `get_style_guide_tags()` then `get_style_guide({ tags: [...] })` with 5–10 domain-matching tags.
+**Step 4** — Call `get_variables({ filePath })` to check for existing tokens.
 
 Merge the style guide with Phase 1 research to form the final design direction.
 

@@ -1,6 +1,6 @@
 {
   "name": "pencil-design-system",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Install the Pencil Design System skill across AI coding editors (Claude Code, Antigravity, Cursor, Windsurf)",
   "type": "module",
   "bin": {

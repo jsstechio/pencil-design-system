@@ -33,7 +33,7 @@ These rules prevent the #1 visual bug (overlapping elements). **Violating any of
 Load reference files from `references/` as each phase begins.
 
 ### Phase 1 — Research the Domain
-**If `collectui-mcp` is available:** Call `collectui_search({ query: "[domain]", limit: 8 })` first. Analyze returned design screenshots — extract dominant colors (hex), typography patterns, layout styles.
+**If `collectui-mcp` is available:** Call `design_search({ query: "[domain]", limit: 8 })` first (or `collectui_search` as fallback). Searches 6 design sites in parallel. Analyze returned screenshots — extract colors, typography, layouts.
 
 If a reference image exists (on canvas, in chat, or URL), analyze it first — extract colors (hex), typography style, tone, radii, shadows. This is the PRIMARY design source. Then search the web for the domain's color palettes, font pairings, and UI conventions. Compile a design brief. **Priority: reference image > Collect UI visual research > user preferences > web research.**
 
@@ -80,6 +80,8 @@ After `set_variables`, call `get_variables` — every color MUST show `"theme":{
 
 See `references/design-tokens-reference.md` for full payload.
 
+**💾 Save the file (Cmd+S / Ctrl+S).**
+
 **REVIEW** — Show token count by category. Wait for user input.
 
 ### Phase 4 — Build Foundations
@@ -94,6 +96,8 @@ See `references/foundations-specs.md`.
 2. **STOP and analyze the screenshot.** Check for: overlapping/garbled text, stacked items that should be side-by-side, clipped content, invisible elements.
 3. `snapshot_layout({ problemsOnly: true, parentId: "sectionId" })`.
 4. **Fix ALL issues BEFORE continuing.** Missing `layout: "horizontal"` → add it. Garbled text → add `width: "fill_container"`.
+
+**💾 Save the file (Cmd+S / Ctrl+S).**
 
 **REVIEW** — Show screenshot. Wait for user input.
 
@@ -119,6 +123,8 @@ After EVERY batch, run the **Post-Batch Validation** above.
 
 All components: `reusable: true`, `$--` tokens only. See `references/component-specs.md`.
 
+**💾 Save the file (Cmd+S / Ctrl+S).**
+
 **REVIEW** — Show component count and screenshot. Wait for user input.
 
 ### Phase 6 — Build Patterns
@@ -135,6 +141,8 @@ Patterns frame with `width: 1440, height: "fit_content", layout: "vertical"`. Bu
 After each pattern, run the **Post-Batch Validation**.
 
 See `references/screen-patterns.md`.
+
+**💾 Save the file (Cmd+S / Ctrl+S).**
 
 **REVIEW** — Show screenshot. Wait for user input.
 

@@ -30,7 +30,7 @@ At each **REVIEW** point, the user will type `c` (continue), `r` (redo), or `s` 
 
 ### Phase 1 — Research the Domain
 
-1. **If `collectui-mcp` is available:** Call `collectui_search({ query: "[domain]", limit: 8 })` first. Analyze the returned design screenshots — extract dominant colors (hex), typography patterns, layout styles, corner radii, shadow depth. Use these as strong design signals.
+1. **If `collectui-mcp` is available:** Call `design_search({ query: "[domain]", limit: 8 })` first (or `collectui_search` if `design_search` is unavailable). This searches Collect UI, Godly, Land-book, Httpster, Brutalist Websites, and Fonts In Use in parallel. Analyze the returned design screenshots — extract dominant colors (hex), typography patterns, layout styles, corner radii, shadow depth. Use these as strong design signals.
 2. **If reference image exists** (on canvas or in chat): Analyze it first. Extract dominant colors (hex), typography style, tone, corner radius, shadow depth. This is the PRIMARY design source.
 3. Search the web for design conventions for the given domain:
    - Color palettes used by real websites in this domain
@@ -96,6 +96,8 @@ Token categories: 19 core colors, 8 semantic colors, 3 fonts, 6 radii, 12 spacin
 
 **After `set_variables`, call `get_variables` and verify EVERY color token shows `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}`.** If ANY color shows `"theme":{}` (empty), the format was wrong — redo before continuing.
 
+**💾 Save the file (Cmd+S / Ctrl+S) before presenting the review.**
+
 **REVIEW** — Show token count by category, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 
 ### Phase 4 — Build Foundations
@@ -116,6 +118,8 @@ All swatches use `$--` token fills. Use `batch_design` with max 25 ops per call.
 4. **If ANY issue is found: FIX IT BEFORE continuing to the next batch.** Do not proceed with broken layouts.
 5. If horizontal items appear stacked, the frame is missing `layout: "horizontal"` — add it.
 6. If text is garbled/overlapping, the text node needs `width: "fill_container"` or `textGrowth: "auto-width"`.
+
+**💾 Save the file (Cmd+S / Ctrl+S) before presenting the review.**
 
 **REVIEW** — Show screenshot, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 
@@ -149,6 +153,8 @@ After EVERY batch below, run the **Post-Batch Validation** (screenshot → analy
 
 After ALL batches: verify with `batch_get({ patterns: [{ reusable: true }] })`. Must show ~25+ components.
 
+**💾 Save the file (Cmd+S / Ctrl+S) before presenting the review.**
+
 **REVIEW** — Show component count and screenshot, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 
 ### Phase 6 — Build Patterns
@@ -167,6 +173,8 @@ Create Patterns section frame with `width: 1440, height: "fit_content", layout: 
 **Every frame MUST have explicit `layout: "horizontal"` or `layout: "vertical"`.** Sidebars and nav containers are ALWAYS vertical.
 
 After each pattern, run the **Post-Batch Validation** (screenshot → analyze → fix before continuing).
+
+**💾 Save the file (Cmd+S / Ctrl+S) before presenting the review.**
 
 **REVIEW** — Show screenshot, then END YOUR RESPONSE. Do not continue until the user replies with `c`, `r`, or `s`.
 

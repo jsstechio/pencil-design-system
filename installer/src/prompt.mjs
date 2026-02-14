@@ -175,11 +175,11 @@ export function singleSelect(message, choices) {
 }
 
 export function banner(version) {
-  const RESET = `${ESC}[0m`;
   console.log(`
   ${BOLD(CYAN('╭───────────────────────────────────────────╮'))}
   ${BOLD(CYAN('│'))}  ${BOLD('Pencil Design System')}   ${DIM(`v${version}`)}          ${BOLD(CYAN('│'))}
   ${BOLD(CYAN('│'))}  ${DIM('AI-powered design system generator')}       ${BOLD(CYAN('│'))}
+  ${BOLD(CYAN('│'))}  ${DIM('by JSS Tech Services')}                    ${BOLD(CYAN('│'))}
   ${BOLD(CYAN('╰───────────────────────────────────────────╯'))}
   `);
 }

@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CONTENT = join(__dirname, '..', 'content');
+const CONTENT = join(__dirname, '..', 'dist');
 const HOME = homedir();
 
 const AGENTS = {

@@ -53,16 +53,25 @@ Starting with domain research...
 
 ## Input
 
-The user provides a **business domain** (e.g., "bakery", "fitness app", "SaaS dashboard"). Optional extras: brand name, color preferences, font preferences, specific screens wanted, light/dark theme preference. If the user gives only a domain, infer everything else from research.
+The user provides a **business domain** (e.g., "bakery", "fitness app", "SaaS dashboard"). Optional extras: brand name, color preferences, font preferences, specific screens wanted, light/dark theme preference, **reference image**. If the user gives only a domain, infer everything else from research.
 
 **If the user specifies colors or fonts:** Use their values as the primary/accent/background tokens in Phase 3 and derive the remaining palette around them (secondary, muted, foregrounds). Research still runs to fill in gaps, but user preferences take priority over both research and fallback tables.
+
+**If the user provides a reference image** (placed on the canvas, pasted in chat, or as a URL): This is the highest-priority design input. In Phase 1, analyze the image to extract:
+- **Colors** — dominant color, accent colors, background color, text color
+- **Typography style** — serif/sans-serif, weight, spacing (match to closest Google Fonts)
+- **Tone** — minimal, bold, playful, corporate, organic, etc.
+- **Layout density** — spacious vs compact, card-heavy vs list-heavy
+- **Visual patterns** — rounded corners vs sharp, shadow depth, border usage
+
+Use these extracted values as the foundation for all tokens. Research supplements the image analysis but does NOT override it — the reference image is the primary source of truth for the design direction.
 
 ## Canvas Organization
 
 The canvas is laid out left-to-right in three core sections (always created), plus an optional screens section:
 
 ```
-[Foundations 1440×2400] → 100px gap → [Components 1440×2400] → 100px gap → [Patterns 1440×1800] → (optional) [Screens →]
+[Foundations 1440×fit] → 100px gap → [Components 1440×fit] → 100px gap → [Patterns 1440×fit] → (optional) [Screens →]
 ```
 
 - **Foundations** — Visual documentation: color palette swatches, typography specimens, spacing scale, elevation examples, border radius showcase.
@@ -80,9 +89,21 @@ Execute these phases in order. Each phase builds on the previous. Never skip man
 
 ### Phase 1 — Research the Domain
 
-Use `WebSearch` to study the domain's design conventions. Identify five pillars: color palette, typography, imagery themes, screen inventory, and UI density/tone. Document findings as a design brief.
+**If `collectui-mcp` is available:** Use it for visual research before web search.
+1. Call `collectui_search({ query: "[domain]", limit: 8 })` — e.g., `"coffee shop"`, `"dashboard"`, `"e-commerce"`
+2. Analyze the returned design screenshots — extract dominant colors (hex), typography patterns, layout styles, corner radii, shadow depth
+3. Use these as strong design signals alongside web research
+
+**If a reference image exists:** Check if the user placed an image on the canvas or provided one in chat.
+- If on canvas: call `get_screenshot` on the image node to analyze it
+- Extract: dominant colors (with hex values), typography style, tone, corner radius style, shadow depth, spacing density
+- Use these extracted values as the PRIMARY design direction — research supplements, not overrides
+
+**Web research (always runs):** Use `WebSearch` to study the domain's design conventions. Identify five pillars: color palette, typography, imagery themes, screen inventory, and UI density/tone. Document findings as a design brief.
 
 **Typography is research-driven, not table-driven.** Run specific font research queries (e.g., `"bakery website fonts 2026"`, `"best Google Fonts for bakery"`) and validate against 3–5 real websites in the domain. The font pairing table in `domain-research-guide.md` is a fallback — always prefer research-validated choices. See `references/domain-research-guide.md`.
+
+**Priority order for design decisions:** Reference image > Collect UI visual research > User preferences > Web research > Fallback tables.
 
 **⛔ REVIEW — Design Brief**
 
@@ -111,8 +132,10 @@ Based on: [list 2-3 reference sites studied]
 
 ### Phase 2 — Initialize the Pencil Document
 
-1. Call `get_editor_state({ include_schema: true })`.
-2. If no active document, call `open_document("new")`.
+1. Call `get_editor_state({ include_schema: true })`. Check the response for an active `.pen` file.
+   - **If a `.pen` file IS already open:** Use it. Do NOT call `open_document`. Note the `filePath`.
+   - **If NO `.pen` file is open:** Create a named file: `open_document("[domain]-design-system.pen")` (e.g., `open_document("coffee-shop-design-system.pen")`). Use the domain from the user's input, kebab-cased. Do NOT use `open_document("new")` — always provide a descriptive filename.
+   - **NEVER create a second document.** Only ONE `.pen` file should exist.
 3. Call `get_guidelines({ topic: "design-system" })`.
 4. Call `get_style_guide_tags()` then `get_style_guide({ tags: [...] })` with 5–10 domain-matching tags.
 5. Call `get_variables({ filePath })` to check for existing tokens.
@@ -140,9 +163,53 @@ Call `set_variables` to create the full token system (~60 tokens). Every color, 
 | Font sizes | 9 | `--text-xs` (12) through `--text-5xl` (48) |
 | Line heights | 3 | `--leading-tight` (1.25), `--leading-normal` (1.5), `--leading-relaxed` (1.75) |
 
-Set up theme axis `{ "mode": ["light", "dark"] }`. All token values are domain-tailored. See `references/design-tokens-reference.md` for full JSON payloads.
+**CRITICAL — Exact `set_variables` format.** Copy this structure exactly. Do NOT deviate.
 
-**Post-creation verification:** After calling `set_variables`, immediately call `get_variables` and verify that every color token's values show `"theme":{"mode":"light"}` and `"theme":{"mode":"dark"}` (not `"theme":{}`). If theme mappings are missing, the `set_variables` call used the wrong format — see the CRITICAL warning in `design-tokens-reference.md`.
+CORRECT format for **color tokens** (themed — light + dark):
+```json
+{
+  "--primary": {
+    "type": "color",
+    "value": [
+      { "value": "#3E2723", "theme": { "mode": "light" } },
+      { "value": "#D7CCC8", "theme": { "mode": "dark" } }
+    ]
+  }
+}
+```
+
+CORRECT format for **non-color tokens** (no theme needed):
+```json
+{
+  "--font-primary": { "type": "string", "value": [{ "value": "Fraunces, serif" }] },
+  "--radius-md":    { "type": "number", "value": [{ "value": 6 }] },
+  "--text-base":    { "type": "number", "value": [{ "value": 16 }] },
+  "--space-4":      { "type": "number", "value": [{ "value": 16 }] }
+}
+```
+
+WRONG — these will break theming:
+```json
+// WRONG: empty theme object — light/dark switching will NOT work
+{ "value": "#3E2723", "theme": {} }
+
+// WRONG: missing theme entirely on colors — both values collapse to same
+{ "value": [{ "value": "#3E2723" }, { "value": "#D7CCC8" }] }
+
+// WRONG: "themes" key in variables object — causes error
+{ "themes": { "mode": ["light", "dark"] }, "--primary": { ... } }
+
+// WRONG: "values" (plural) instead of "value"
+{ "--primary": { "type": "color", "values": [...] } }
+```
+
+**Post-creation verification (MANDATORY):** After calling `set_variables`, immediately call `get_variables` and check EVERY color token. Each must show:
+- `"theme": {"mode": "light"}` on the first value
+- `"theme": {"mode": "dark"}` on the second value
+
+If ANY color shows `"theme": {}` (empty object) or missing theme keys, the format was WRONG. Delete all variables and redo with the correct format above. Do NOT proceed to Phase 4 with broken themes.
+
+See `references/design-tokens-reference.md` for full JSON payloads.
 
 **⛔ REVIEW — Tokens**
 
@@ -173,13 +240,13 @@ Tokens Created — [count] total
 
 ### Phase 4 — Build Foundations (Visual Documentation)
 
-Create the Foundations section frame at the left of the canvas. Inside it, build 5 visual documentation frames:
+Create the Foundations section frame at the left of the canvas with `width: 1440, height: "fit_content", layout: "vertical"`. **Do NOT use fixed heights** — use `height: "fit_content"` so the frame grows to fit all content. Inside it, build 5 visual documentation frames:
 
-1. **Color Palette** — Grid of labeled swatches for all 27 color tokens.
+1. **Color Palette** — Labeled swatches for all 27 color tokens. **Split into rows of max 5-6 swatches each** to prevent horizontal overflow. Use multiple horizontal rows inside a vertical container (e.g., Row 1: Primary, Secondary, Accent, Background, Card. Row 2: Success, Warning, Destructive, Muted, Input, Border. Row 3: Foregrounds + remaining). Each swatch is ~140-160px wide — 6 swatches + gaps fit within 1280px content width.
 2. **Typography Scale** — 6 specimens (H1 → Caption) rendered at real sizes with metadata labels.
-3. **Spacing Scale** — 12 visual blocks showing each spacing value with labels.
-4. **Elevation** — 4 cards demonstrating shadow levels.
-5. **Border Radius** — 6 rectangles showcasing each radius token.
+3. **Spacing Scale** — 12 visual blocks showing each spacing value with labels. Use 2 rows of 6 blocks each.
+4. **Elevation** — 4 cards demonstrating shadow levels in a single horizontal row.
+5. **Border Radius** — 6 rectangles showcasing each radius token in a single horizontal row.
 
 **Critical: Use a neutral white backdrop (`fill: "#FFFFFF"`), NOT the design system's own `$--background` token.** The Foundations section is documentation chrome — using the themed background (e.g., cream for a bakery, blue-gray for SaaS) makes light swatches like `--card`, `--secondary`, and `--muted` nearly invisible. A neutral white surface lets every color be evaluated accurately against a known reference. Swatches use `$--` tokens for their fills; only the documentation frame itself is neutral.
 
@@ -213,7 +280,7 @@ Sections built:
 
 ### Phase 5 — Build Base Components (~15 Primitives)
 
-Create the Components section frame to the right of Foundations with `fill: "#FFFFFF"` (same neutral backdrop rationale as Foundations — light-fill variants like Ghost buttons and muted badges need a known white reference). Inside it, create category sub-frames with titles and display rows. Insert components under their category frame — NOT at document root.
+Create the Components section frame to the right of Foundations with `width: 1440, height: "fit_content", layout: "vertical", fill: "#FFFFFF"` (same neutral backdrop rationale as Foundations — light-fill variants like Ghost buttons and muted badges need a known white reference). **Do NOT use fixed heights** — use `height: "fit_content"`. Inside it, create category sub-frames with titles and display rows. Insert components under their category frame — NOT at document root.
 
 | Batch | Category | Components | Count |
 |-------|----------|-----------|-------|
@@ -279,12 +346,25 @@ Components Created — [count] reusable
 
 ### Phase 7 — Build Patterns (Composition Showcases)
 
-Create the Patterns section frame to the right of Components. Build 4 composition showcases that demonstrate real usage of the components:
+Create the Patterns section frame to the right of Components with `width: 1440, height: "fit_content", layout: "vertical"`. Build 4 composition showcases that demonstrate real usage of the components:
 
-1. **Form Pattern** — Vertical stack of InputGroup refs + Submit button.
-2. **Data Display Pattern** — Table ref with populated rows + Pagination ref.
-3. **Navigation Pattern** — Sidebar ref + Breadcrumbs ref + Tabs ref.
-4. **Card Layout Pattern** — Grid of populated Card refs with images and domain content.
+1. **Form Pattern** — Vertical stack (`layout: "vertical"`) of InputGroup refs + Submit button.
+2. **Data Display Pattern** — Table ref with populated rows + Pagination ref, stacked vertically.
+3. **Navigation Pattern** — Horizontal layout with sidebar (left, `layout: "vertical"`, width: 240px) + content area (right, `layout: "vertical"`, `width: "fill_container"`). **The sidebar frame MUST have `layout: "vertical"`** so nav items stack. Each nav item is a separate text/ref element inside the sidebar.
+4. **Card Layout Pattern** — Horizontal row of populated Card refs (`layout: "horizontal"`, `gap: 24`). Use `width: "fill_container"` on cards to distribute evenly. **Add domain-relevant stock images** to each card using `G(imageFrame, "stock", "[domain] keyword")` — e.g., for a coffee shop: `"latte art"`, `"coffee beans"`, `"barista"`.
+
+**Using images (`G()` operation):**
+- Card images: Insert a frame (e.g., `width: "fill_container", height: 200`) inside the card, then `G(frame, "stock", "[domain keyword]")`
+- Avatar components: `G(avatarFrame, "stock", "professional portrait")`
+- Hero sections in screens: `G(heroFrame, "stock", "[domain] hero")`
+- Use `"stock"` for realistic photos, `"ai"` for custom/branded visuals
+- Always insert the frame FIRST, then apply `G()` — images are fills on frames, not separate nodes
+
+**Layout rules for patterns:**
+- Every frame that arranges children horizontally MUST have `layout: "horizontal"`
+- Every frame that stacks children vertically MUST have `layout: "vertical"`
+- Sidebar/nav containers are ALWAYS `layout: "vertical"`
+- Content areas with mixed content are ALWAYS `layout: "vertical"`
 
 Each pattern uses only `ref` instances + `$--` tokens. **After each pattern, run the Post-Batch Validation** (screenshot + check for overlapping/broken layouts). See `references/screen-patterns.md`.
 

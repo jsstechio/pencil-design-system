@@ -16,7 +16,8 @@ These rules prevent the #1 visual bug (overlapping elements). **Violating any of
 4. **Use `height: "fit_content"` on section frames** — never fixed pixel heights. Fixed heights cause content to clip or overflow.
 5. **After EVERY `batch_design` call, take a screenshot and CHECK for overlapping elements.** If anything overlaps, the parent frame is missing `layout` — fix it immediately.
 6. **Copy the exact operation code from the reference files.** Do NOT improvise layout code.
-7. **NEVER call `open_document("new")` or `open_document` if a `.pen` file is already open.** Always check `get_editor_state` first and use the existing file. The reference files have tested, working `batch_design` operations.
+7. **NEVER call `open_document("new")` or `open_document` if a `.pen` file is already open.** Always check `get_editor_state` first and use the existing file.
+8. **NEVER put `"themes"` key in the `set_variables` object.** This crashes with "missing type". Themes auto-register from `"theme": { "mode": "light" }` inside each color value.
 
 ## Input
 
@@ -60,6 +61,12 @@ Call `get_editor_state({ include_schema: true })`. Read the response carefully. 
 
 Call `set_variables` to create ~89 themed tokens. Every color, font, radius, spacing, shadow, font size, line height, font weight, letter spacing, sizing, opacity, and border width is a variable.
 
+**⛔ FATAL ERRORS — avoid these or `set_variables` will crash:**
+- **NEVER put `"themes": { "mode": ["light", "dark"] }` in the variables object.** This causes: `Variable 'themes' is missing its 'type' property!`
+- **NEVER use `"theme": {}`** (empty object) — breaks theming
+- **NEVER use `"values"` (plural)** — the key is `"value"` (singular)
+- Themes auto-register when you use `"theme": { "mode": "light" }` inside each color's value array
+
 **CRITICAL — Exact format. Copy this structure. Do NOT deviate.**
 
 CORRECT — color tokens (themed):
@@ -81,13 +88,6 @@ CORRECT — non-color tokens (no theme):
   "--font-primary": { "type": "string", "value": [{ "value": "Fraunces, serif" }] },
   "--radius-md":    { "type": "number", "value": [{ "value": 6 }] }
 }
-```
-
-WRONG — these break theming:
-```
-{ "value": "#HEX", "theme": {} }           // empty theme = broken
-{ "themes": { "mode": ["light","dark"] } }  // themes key in variables = error
-{ "values": [...] }                          // "values" plural = wrong key
 ```
 
 Token categories: 19 core colors, 8 semantic colors, 3 fonts, 6 radii, 12 spacing, 4 shadows, 9 font sizes, 3 line heights, 6 font weights, 4 letter spacing, 9 sizing, 3 opacity, 3 border widths. **Total: ~89 tokens.**

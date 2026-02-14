@@ -21,6 +21,7 @@ These rules prevent the #1 visual bug (overlapping elements). **Violating any of
 4. **After EVERY `batch_design`, screenshot and CHECK for overlap.** Missing `layout` → add it immediately.
 5. **Copy exact operation code from reference files.** Do NOT improvise layout code.
 6. **NEVER call `open_document("new")`.** Always check `get_editor_state` first — if a `.pen` file exists, use it.
+7. **NEVER put `"themes"` key in `set_variables`.** Crashes with "missing type". Themes auto-register from `"theme": { "mode": "light" }` inside each color value.
 
 ## Getting Started
 
@@ -55,7 +56,13 @@ Call `get_editor_state({ include_schema: true })`. Look at the `filePath` in the
 **Step 4** — `get_variables({ filePath })` — check for existing tokens
 
 ### Phase 3 — Create Design Tokens (~89)
-Call `set_variables` with all tokens. CRITICAL — use this exact format:
+Call `set_variables` with all tokens.
+
+**⛔ FATAL ERRORS — avoid these or `set_variables` will crash:**
+- **NEVER put `"themes": { "mode": ["light", "dark"] }` in the variables object.** This causes: `Variable 'themes' is missing its 'type' property!`
+- **NEVER use `"theme": {}`** (empty object) — breaks theming
+- **NEVER use `"values"` (plural)** — the key is `"value"` (singular)
+- Themes auto-register when you use `"theme": { "mode": "light" }` inside each color's value array
 
 CORRECT — color tokens (themed):
 ```json
@@ -71,8 +78,6 @@ CORRECT — color tokens (themed):
 ```
 
 CORRECT — non-color tokens: `{ "type": "number", "value": [{ "value": 6 }] }`
-
-WRONG: `"theme": {}` (empty), `"themes"` key in variables, `"values"` (plural).
 
 **Semantic colors MUST be derived from the primary palette** — match temperature, saturation, lightness. Do NOT use default Tailwind green/amber/red/blue. See `references/design-tokens-reference.md` for examples.
 

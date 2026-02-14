@@ -15,7 +15,7 @@ metadata:
 
 # Pencil Design System Generator
 
-Generate a complete, Mews-inspired design system in a Pencil `.pen` file. Research the business domain, create ~60 themed tokens, build visual foundation documentation, ~25 reusable components organized by category, and composition patterns — all from a single command like `/pds coffee shop that sells coffee online`. Domain screens are generated only if the user explicitly requests them.
+Generate a complete, Mews-inspired design system in a Pencil `.pen` file. Research the business domain, create ~89 themed tokens, build visual foundation documentation, ~25 reusable components organized by category, and composition patterns — all from a single command like `/pds coffee shop that sells coffee online`. Domain screens are generated only if the user explicitly requests them.
 
 ## ⛔ GOLDEN RULES — Read These First
 
@@ -45,7 +45,7 @@ Fonts:  [extracted preferences or "will research"]
 
 I'll build this step by step:
  1. Research    -> design brief
- 2. Tokens      -> ~64 themed variables (light + dark)
+ 2. Tokens      -> ~89 themed variables (light + dark)
  3. Foundations  -> visual documentation
  4. Components  -> ~25 reusable parts
  5. Patterns    -> 4 composition showcases
@@ -68,8 +68,8 @@ The user provides a **business domain** (e.g., "bakery", "fitness app", "SaaS da
 
 **If the user specifies colors or fonts:** Use their values as the primary/accent/background tokens in Phase 3 and derive the remaining palette around them (secondary, muted, foregrounds). Research still runs to fill in gaps, but user preferences take priority over both research and fallback tables.
 
-**If the user provides a reference image** (placed on the canvas, pasted in chat, or as a URL): This is the highest-priority design input. In Phase 1, analyze the image to extract:
-- **Colors** — dominant color, accent colors, background color, text color
+**If the user provides a reference image** (placed on the canvas, pasted in chat, or as a URL): This is the highest-priority design input. In Phase 1, run the 7-pass structured extraction to derive:
+- **Colors** — dominant color, accent colors, background color, text color (report as hex values)
 - **Typography style** — serif/sans-serif, weight, spacing (match to closest Google Fonts)
 - **Tone** — minimal, bold, playful, corporate, organic, etc.
 - **Layout density** — spacious vs compact, card-heavy vs list-heavy
@@ -107,8 +107,23 @@ Execute these phases in order. Each phase builds on the previous. Never skip man
 
 **If a reference image exists:** Check if the user placed an image on the canvas or provided one in chat.
 - If on canvas: call `get_screenshot` on the image node to analyze it
-- Extract: dominant colors (with hex values), typography style, tone, corner radius style, shadow depth, spacing density
-- Use these extracted values as the PRIMARY design direction — research supplements, not overrides
+- If pasted in chat or provided as a URL: analyze the image directly
+
+Run a **7-pass structured extraction** to map visual properties to specific tokens:
+
+| Pass | What to Extract | Token Mapping |
+|------|----------------|---------------|
+| **1. Colors** | Background color(s), primary brand color, secondary/supporting color, accent color (buttons/links/highlights), text colors (heading, body, muted/caption), border/divider colors, any semantic indicators (green/amber/red for status) | `--background`, `--primary`, `--secondary`, `--accent`, `--foreground`, `--muted-foreground`, `--border`, `--color-success/warning/error/info` |
+| **2. Typography** | Heading font (serif/sans? geometric/humanist?), body font, font weights observed (thin, regular, semibold, bold?), letter spacing patterns (tight headings? wide all-caps?), line height density | `--font-primary`, `--font-secondary`, `--weight-*`, `--tracking-*`, `--leading-*` |
+| **3. Spacing & Sizing** | Overall density (spacious/moderate/compact), padding scale estimates (small 4-8px, medium 12-16px, large 24-32px), component sizes (button height, input height, icon sizes), gap patterns between cards/fields/sections | `--space-*`, `--size-button-height`, `--size-input-height`, `--size-icon-*`, `--size-sidebar-width` |
+| **4. Shape Language** | Corner radius style (sharp 0-2px, subtle 4-6px, medium 8-12px, rounded 16+px, pill), shadow depth (none/subtle/moderate/prominent), border usage pattern | `--radius-*`, `--shadow-*`, `--border-thin/default/thick` |
+| **5. Visual Patterns** | Card-heavy or flat/borderless layout, icon style (outlined/solid, thin/regular stroke), opacity usage (transparent overlays, disabled states), border widths (hairline 1px, default 1-2px, thick 2-3px) | `--opacity-*`, `--border-*` |
+| **6. Tone** | Professional/corporate, playful/casual, minimal/clean, bold/dramatic, organic/natural — and implied audience (enterprise, consumer, creative, developer) | Informs semantic color derivation and font selection |
+| **7. Structured Output** | Compile a mapping table: each extracted value → specific token name and estimated value | Feeds directly into Phase 3 token creation |
+
+**If no reference image exists:** Skip this extraction and rely on CollectUI visual research + web search + fallback tables. The remaining phases work identically — the image extraction is an enhancement that provides higher-fidelity starting values, not a requirement.
+
+Use extracted values as the PRIMARY design direction — research supplements, not overrides
 
 **Web research (always runs):** Use `WebSearch` to study the domain's design conventions. Identify five pillars: color palette, typography, imagery themes, screen inventory, and UI density/tone. Document findings as a design brief.
 
@@ -123,16 +138,31 @@ Present the research findings as a design brief:
 ```
 Design Brief — [Domain]
 
-Primary:    [hex] ([description])
-Secondary:  [hex] ([description])
-Accent:     [hex] ([description])
-Background: [hex] ([description])
-Heading:    [font name]
-Body:       [font name]
-Mono:       [font name]
-Tone:       [2-3 adjectives]
+Colors:
+  Primary:    [hex] ([description])
+  Secondary:  [hex] ([description])
+  Accent:     [hex] ([description])
+  Background: [hex] ([description])
 
-Based on: [list 2-3 reference sites studied]
+Typography:
+  Heading:    [font name]
+  Body:       [font name]
+  Mono:       [font name]
+  Weights:    [list observed: regular, semibold, bold, etc.]
+  Tracking:   [tight headings / normal body / wide caps]
+
+Shape & Depth:
+  Radius:     [sharp / subtle / medium / rounded / pill]
+  Shadows:    [none / subtle / moderate / prominent]
+  Borders:    [hairline / default / thick]
+
+Layout:
+  Density:    [spacious / moderate / compact]
+  Icon style: [outline / solid, thin / regular]
+
+Tone:       [2-3 adjectives]
+Source:     [reference image / CollectUI / web research]
+Based on:   [list 2-3 reference sites or image description]
 ```
 
 **[c]** Continue to token creation
@@ -161,7 +191,7 @@ Merge the style guide with Phase 1 research to form the final design direction.
 
 ### Phase 3 — Create Design Tokens
 
-Call `set_variables` to create the full token system (~60 tokens). Every color, font, radius, spacing value, shadow, font size, and line height is a variable.
+Call `set_variables` to create the full token system (~89 tokens). Every color, font, radius, spacing, shadow, font size, line height, font weight, letter spacing, sizing, opacity, and border width is a variable.
 
 **Handling user-specified colors:** If the user provided color preferences (e.g., "terracotta and cream"), map them to the appropriate tokens (`--primary`, `--background`, `--accent`) and derive the rest of the palette (secondary, muted, foregrounds, borders) to complement. The industry palette tables are starting points, not mandates.
 
@@ -179,6 +209,11 @@ Call `set_variables` to create the full token system (~60 tokens). Every color, 
 | Shadows | 4 | `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl` |
 | Font sizes | 9 | `--text-xs` (12) through `--text-5xl` (48) |
 | Line heights | 3 | `--leading-tight` (1.25), `--leading-normal` (1.5), `--leading-relaxed` (1.75) |
+| Font weights | 6 | `--weight-thin` ("200") through `--weight-bold` ("700") |
+| Letter spacing | 4 | `--tracking-tight` (-0.5) through `--tracking-wide` (1.5) |
+| Sizing | 9 | `--size-icon-sm` (16), `--size-avatar-md` (40), `--size-button-height` (40), `--size-sidebar-width` (240) |
+| Opacity | 3 | `--opacity-disabled` (0.5), `--opacity-hover` (0.8), `--opacity-overlay` (0.6) |
+| Border widths | 3 | `--border-thin` (1), `--border-default` (1.5), `--border-thick` (2) |
 
 **Semantic colors MUST be derived from the primary palette.** Match the temperature (warm/cool), saturation, and lightness of your primary/accent colors. Do NOT use default Tailwind green/amber/red/blue (`#22C55E`, `#F59E0B`, `#EF4444`, `#3B82F6`). A warm muted palette needs warm muted semantics (sage green, golden amber, terracotta red, dusty blue). A cool vivid palette needs cool vivid semantics (teal-green, gold, crimson, blue). See `references/design-tokens-reference.md` for the derivation algorithm and per-industry examples.
 
@@ -259,17 +294,23 @@ Tokens Created — [count] total
 
 ### Phase 4 — Build Foundations (Visual Documentation)
 
-Create the Foundations section frame at the left of the canvas with `width: 1440, height: "fit_content", layout: "vertical"`. **Do NOT use fixed heights** — use `height: "fit_content"` so the frame grows to fit all content. Inside it, build 5 visual documentation frames:
+Create the Foundations section frame at the left of the canvas with `width: 1440, height: "fit_content", layout: "vertical"`. **Do NOT use fixed heights** — use `height: "fit_content"` so the frame grows to fit all content. Inside it, build 11 visual documentation frames:
 
 1. **Color Palette** — Labeled swatches for all 27 color tokens. **Split into rows of max 5-6 swatches each** to prevent horizontal overflow. Use multiple horizontal rows inside a vertical container (e.g., Row 1: Primary, Secondary, Accent, Background, Card. Row 2: Success, Warning, Destructive, Muted, Input, Border. Row 3: Foregrounds + remaining). Each swatch is ~140-160px wide — 6 swatches + gaps fit within 1280px content width.
 2. **Typography Scale** — 6 specimens (H1 → Caption) rendered at real sizes with metadata labels.
 3. **Spacing Scale** — 12 visual blocks showing each spacing value with labels. Use 2 rows of 6 blocks each.
 4. **Elevation** — 4 cards demonstrating shadow levels in a single horizontal row.
 5. **Border Radius** — 6 rectangles showcasing each radius token in a single horizontal row.
+6. **Font Sizes** — 9 text samples rendered at actual `--text-xs` through `--text-5xl` sizes with token name + pixel value labels.
+7. **Font Weights** — Same sample text rendered in each of the 6 weight tokens (`--weight-thin` through `--weight-bold`).
+8. **Semantic Colors** — 4 large card-like swatches for success/warning/error/info, each showing the color paired with its foreground.
+9. **Sizing** — Visual rectangles showing icon sizes (sm/md/lg), avatar sizes (sm/md/lg), button height, and input height.
+10. **Shadows & Borders** — Expanded elevation section showing 4 shadow levels + 3 border width examples + 3 opacity examples.
+11. **Letter Spacing** — Same text rendered at each `--tracking-*` value with labels.
 
 **Critical: Use a neutral white backdrop (`fill: "#FFFFFF"`), NOT the design system's own `$--background` token.** The Foundations section is documentation chrome — using the themed background (e.g., cream for a bakery, blue-gray for SaaS) makes light swatches like `--card`, `--secondary`, and `--muted` nearly invisible. A neutral white surface lets every color be evaluated accurately against a known reference. Swatches use `$--` tokens for their fills; only the documentation frame itself is neutral.
 
-These are documentation frames, NOT reusable components. They use `$--` tokens for swatch fills everywhere. See `references/foundations-specs.md` for exact `batch_design` code (spread across 3 calls within 25-op limits).
+These are documentation frames, NOT reusable components. They use `$--` tokens for swatch fills everywhere. See `references/foundations-specs.md` for exact `batch_design` code (spread across Batches A–J within 25-op limits).
 
 After each batch, call `get_screenshot` to verify rendering.
 
@@ -286,6 +327,12 @@ Sections built:
  - Spacing Scale (12 blocks)
  - Elevation (4 shadow levels)
  - Border Radius (6 shapes)
+ - Font Sizes (9 samples)
+ - Font Weights (6 weight samples)
+ - Semantic Colors (4 status cards)
+ - Sizing (icons, avatars, buttons, inputs)
+ - Shadows & Borders (shadows + border widths + opacity)
+ - Letter Spacing (4 tracking samples)
 
 [screenshot]
 [any visual issues: blank swatches, overlap, clipping]
@@ -296,6 +343,40 @@ Sections built:
 **[s]** Skip to final verification
 
 **WAIT for user input. Do NOT proceed.**
+
+### Phase 4b — Build Icon Library
+
+Build a documentation frame inside Foundations (after the Letter Spacing section) containing a curated set of **42 Lucide icons** organized into 6 categories. This makes the design system self-documenting — users can see all available icons at a glance.
+
+**Structure:**
+
+| Category | Icons (7 each) |
+|----------|---------------|
+| Navigation | `house`, `arrow-left`, `arrow-right`, `chevron-down`, `menu`, `search`, `x` |
+| Action | `plus`, `minus`, `edit`, `trash-2`, `download`, `upload`, `copy` |
+| Status | `check`, `circle-check`, `circle-x`, `triangle-alert`, `info`, `loader`, `clock` |
+| Social | `share`, `heart`, `star`, `bookmark`, `message-circle`, `bell`, `user` |
+| Media | `image`, `camera`, `play`, `pause`, `volume-2`, `mic`, `film` |
+| Misc | `settings`, `filter`, `eye`, `eye-off`, `lock`, `unlock`, `globe` |
+
+Each icon rendered as:
+```javascript
+iconFrame=I(categoryRow, { type: "frame", layout: "vertical", gap: 6, alignItems: "center", width: 80, padding: [12, 8, 12, 8] })
+icon=I(iconFrame, { type: "icon_font", iconFontFamily: "lucide", iconFontName: "[name]", width: 24, height: 24, fill: "$--foreground" })
+iconLabel=I(iconFrame, { type: "text", content: "[name]", fontFamily: "$--font-mono", fontSize: 10, fill: "$--muted-foreground", textAlignHorizontal: "center" })
+```
+
+Each category row = ~23 ops (1 title + 1 row frame + 7 icons × 3 ops). Total: 6 `batch_design` calls.
+
+**Domain adaptation:** Supplement the base 42 icons with domain-specific icons:
+- **Food/Bakery:** `utensils`, `cake`, `coffee`, `wine`, `shopping-bag`
+- **SaaS/Dashboard:** `layout-dashboard`, `bar-chart-2`, `database`, `cloud`, `webhook`
+- **Fitness:** `dumbbell`, `timer`, `activity`, `trophy`, `flame`
+- **E-commerce:** `shopping-cart`, `package`, `truck`, `credit-card`, `tag`
+
+**IMPORTANT:** Use explicit pixel values (24) for `icon_font` width/height — variable references like `$--size-icon-lg` may resolve to 0 for `icon_font` nodes.
+
+No review gate here — continue directly to Phase 5.
 
 ### Phase 5 — Build Base Components (~15 Primitives)
 
@@ -559,7 +640,7 @@ This helps users navigate the canvas. Only include the Screens entry if Phase 8 
 - **Tailwind version:** v3 or v4
 - **Framework:** Next.js or Vite+React
 
-**Step 2 — Extract tokens.** Call `get_variables({ filePath })` to read all ~64 tokens. Categorize by type (color, number, string, shadow). Separate themed (light/dark) from static tokens.
+**Step 2 — Extract tokens.** Call `get_variables({ filePath })` to read all ~89 tokens. Categorize by type (color, number, string, shadow). Separate themed (light/dark) from static tokens.
 
 **Step 3 — Read components.** Call `batch_get({ patterns: [{ reusable: true }], readDepth: 3, searchDepth: 3 })` to get every reusable component with its full node tree.
 
@@ -636,7 +717,7 @@ Load the relevant file before starting each phase:
 
 - **`references/pencil-mcp-guide.md`** — Complete Pencil MCP tool reference with examples and operation syntax.
 - **`references/domain-research-guide.md`** — Domain research strategies, color psychology, font pairings, screen inventories.
-- **`references/design-tokens-reference.md`** — Token architecture, `set_variables` JSON payloads, ~60 token definitions, industry palettes.
+- **`references/design-tokens-reference.md`** — Token architecture, `set_variables` JSON payloads, ~89 token definitions, industry palettes.
 - **`references/foundations-specs.md`** — Visual foundation documentation: color palette, typography scale, spacing, elevation, radius `batch_design` code.
 - **`references/component-specs.md`** — All ~25 component `batch_design` operation code with section frame organization.
 - **`references/screen-patterns.md`** — Layout patterns, composition showcases, and domain-specific screen templates.

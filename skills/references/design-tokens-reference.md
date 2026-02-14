@@ -188,6 +188,66 @@ Consistent typographic scale. These map to common text roles.
 | `--leading-normal` | `number` | `1.5` | Body text, paragraphs |
 | `--leading-relaxed` | `number` | `1.75` | Long-form reading, captions |
 
+### Font Weight Tokens
+
+Tokenized font weights ensure consistent typographic emphasis across components. Use `type: "string"` because Pencil's `fontWeight` property expects string values.
+
+| Token | Type | Value | Use Case |
+|-------|------|-------|----------|
+| `--weight-thin` | `string` | `"200"` | Display/hero headings for light elegant feel |
+| `--weight-light` | `string` | `"300"` | Subheadings, light body text |
+| `--weight-regular` | `string` | `"400"` | Body text default |
+| `--weight-medium` | `string` | `"500"` | Emphasized body, labels, UI text |
+| `--weight-semibold` | `string` | `"600"` | Button text, card titles, nav items |
+| `--weight-bold` | `string` | `"700"` | Headings, strong emphasis |
+
+### Letter Spacing Tokens
+
+Control character spacing for different typographic contexts. Values are in pixels (Pencil `letterSpacing` takes pixel values, not em).
+
+| Token | Type | Value (px) | Use Case |
+|-------|------|-----------|----------|
+| `--tracking-tight` | `number` | `-0.5` | Large display headings |
+| `--tracking-condensed` | `number` | `-0.25` | Section titles, subheadings |
+| `--tracking-normal` | `number` | `0` | Body text, most UI text |
+| `--tracking-wide` | `number` | `1.5` | All-caps labels, overlines, badges |
+
+### Sizing Tokens
+
+Standard dimensions for common UI elements. These ensure consistent sizing across components and screens.
+
+| Token | Type | Value (px) | Use Case |
+|-------|------|-----------|----------|
+| `--size-icon-sm` | `number` | `16` | Small inline icons, badges |
+| `--size-icon-md` | `number` | `20` | Default icon size, nav items |
+| `--size-icon-lg` | `number` | `24` | Navigation icons, feature icons |
+| `--size-avatar-sm` | `number` | `32` | Compact user avatars, comment threads |
+| `--size-avatar-md` | `number` | `40` | Default user avatars, cards |
+| `--size-avatar-lg` | `number` | `56` | Profile page avatars, hero sections |
+| `--size-button-height` | `number` | `40` | Standard button height |
+| `--size-input-height` | `number` | `40` | Standard input/select height |
+| `--size-sidebar-width` | `number` | `240` | Navigation sidebar width |
+
+### Opacity Tokens
+
+Standard opacity values for interactive states and overlays.
+
+| Token | Type | Value | Use Case |
+|-------|------|-------|----------|
+| `--opacity-disabled` | `number` | `0.5` | Disabled buttons, inputs, inactive elements |
+| `--opacity-hover` | `number` | `0.8` | Hover state overlays, subtle interactions |
+| `--opacity-overlay` | `number` | `0.6` | Modal/dialog backdrops, lightbox overlays |
+
+### Border Width Tokens
+
+Consistent stroke widths for borders, dividers, and outlines.
+
+| Token | Type | Value (px) | Use Case |
+|-------|------|-----------|----------|
+| `--border-thin` | `number` | `1` | Default borders, card edges, input fields |
+| `--border-default` | `number` | `1.5` | Emphasized borders, active states, focus rings |
+| `--border-thick` | `number` | `2` | Heavy dividers, section separators, focused inputs |
+
 ---
 
 ## set_variables JSON Payload Template
@@ -384,7 +444,32 @@ Use this template as the base. Replace domain-specific values (marked with `<<<`
     "--text-5xl": { "type": "number", "value": 48 },
     "--leading-tight": { "type": "number", "value": 1.25 },
     "--leading-normal": { "type": "number", "value": 1.5 },
-    "--leading-relaxed": { "type": "number", "value": 1.75 }
+    "--leading-relaxed": { "type": "number", "value": 1.75 },
+    "--weight-thin": { "type": "string", "value": "200" },
+    "--weight-light": { "type": "string", "value": "300" },
+    "--weight-regular": { "type": "string", "value": "400" },
+    "--weight-medium": { "type": "string", "value": "500" },
+    "--weight-semibold": { "type": "string", "value": "600" },
+    "--weight-bold": { "type": "string", "value": "700" },
+    "--tracking-tight": { "type": "number", "value": -0.5 },
+    "--tracking-condensed": { "type": "number", "value": -0.25 },
+    "--tracking-normal": { "type": "number", "value": 0 },
+    "--tracking-wide": { "type": "number", "value": 1.5 },
+    "--size-icon-sm": { "type": "number", "value": 16 },
+    "--size-icon-md": { "type": "number", "value": 20 },
+    "--size-icon-lg": { "type": "number", "value": 24 },
+    "--size-avatar-sm": { "type": "number", "value": 32 },
+    "--size-avatar-md": { "type": "number", "value": 40 },
+    "--size-avatar-lg": { "type": "number", "value": 56 },
+    "--size-button-height": { "type": "number", "value": 40 },
+    "--size-input-height": { "type": "number", "value": 40 },
+    "--size-sidebar-width": { "type": "number", "value": 240 },
+    "--opacity-disabled": { "type": "number", "value": 0.5 },
+    "--opacity-hover": { "type": "number", "value": 0.8 },
+    "--opacity-overlay": { "type": "number", "value": 0.6 },
+    "--border-thin": { "type": "number", "value": 1 },
+    "--border-default": { "type": "number", "value": 1.5 },
+    "--border-thick": { "type": "number", "value": 2 }
   }
 }
 ```
@@ -599,6 +684,21 @@ When tokens are used in components:
 | `padding` on cards | `$--space-4` or `$--space-6` |
 | `gap` on sections | `$--space-6` or `$--space-8` |
 | `padding` on page sections | `$--space-20` |
+| `fontWeight` on headings | `$--weight-bold` |
+| `fontWeight` on buttons/labels | `$--weight-semibold` |
+| `fontWeight` on body text | `$--weight-regular` |
+| `letterSpacing` on display headings | `$--tracking-tight` |
+| `letterSpacing` on all-caps labels | `$--tracking-wide` |
+| `width/height` on icons (small) | `$--size-icon-sm` |
+| `width/height` on icons (default) | `$--size-icon-md` |
+| `width/height` on avatars | `$--size-avatar-md` |
+| `height` on buttons | `$--size-button-height` |
+| `height` on inputs | `$--size-input-height` |
+| `width` on sidebars | `$--size-sidebar-width` |
+| `opacity` on disabled states | `$--opacity-disabled` |
+| `opacity` on overlays | `$--opacity-overlay` |
+| `strokeThickness` on borders | `$--border-thin` |
+| `strokeThickness` on heavy dividers | `$--border-thick` |
 
 ---
 
@@ -637,6 +737,14 @@ When exporting to Tailwind CSS, each token maps to a CSS custom property and cor
 | `$--shadow-lg` | `--shadow-lg` | `shadow-lg` | `shadow-[var(--shadow-lg)]` |
 | `$--space-4` | `--space-4` | `p-4` / `gap-4` | `p-[var(--space-4)]` |
 | `$--leading-normal` | `--leading-normal` | `leading-normal` | `leading-[var(--leading-normal)]` |
+| `$--weight-semibold` | `--weight-semibold` | `font-semibold` | `font-[var(--weight-semibold)]` |
+| `$--weight-bold` | `--weight-bold` | `font-bold` | `font-[var(--weight-bold)]` |
+| `$--tracking-tight` | `--tracking-tight` | `tracking-tight` | `tracking-[var(--tracking-tight)]` |
+| `$--tracking-wide` | `--tracking-wide` | `tracking-wide` | `tracking-[var(--tracking-wide)]` |
+| `$--size-icon-md` | `--size-icon-md` | `w-5 h-5` | `size-[var(--size-icon-md)]` |
+| `$--size-avatar-md` | `--size-avatar-md` | `w-10 h-10` | `size-[var(--size-avatar-md)]` |
+| `$--opacity-disabled` | `--opacity-disabled` | `opacity-50` | `opacity-[var(--opacity-disabled)]` |
+| `$--border-thin` | `--border-thin` | `border` | `border-[length:var(--border-thin)]` |
 
 ### HSL Conversion (v3 Only)
 
@@ -665,7 +773,12 @@ See `references/code-export-guide.md` for the complete export workflow and compo
 | Shadows | 4 |
 | Font sizes | 9 |
 | Line heights | 3 |
-| **Total** | **64** |
+| Font weights | 6 |
+| Letter spacing | 4 |
+| Sizing | 9 |
+| Opacity | 3 |
+| Border widths | 3 |
+| **Total** | **89** |
 
 ---
 

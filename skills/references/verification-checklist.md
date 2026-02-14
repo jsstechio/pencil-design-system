@@ -14,7 +14,7 @@ Verify the canvas has the correct organizational structure:
 
 | Section | Expected Position | Required |
 |---------|------------------|----------|
-| **Foundations** | x: 0, y: 0, 1440×2400 | Yes |
+| **Foundations** (incl. Icon Library) | x: 0, y: 0, 1440×auto | Yes |
 | **Components** | x: 1540, y: 0, 1440×2400 | Yes |
 | **Patterns** | x: 3080, y: 0, 1440×1800 | Yes |
 | **Screens** | x: 4620+, y: 0 | Yes (3-5 screens) |
@@ -35,7 +35,7 @@ Verify the canvas has the correct organizational structure:
 
 **Tool:** `batch_get({ filePath, parentId: "foundationsId", patterns: [{ type: "frame" }], searchDepth: 2 })`
 
-Verify all 5 documentation frames are present inside Foundations:
+Verify all 11 documentation frames are present inside Foundations:
 
 | Frame | Content | Min Elements |
 |-------|---------|-------------|
@@ -44,6 +44,12 @@ Verify all 5 documentation frames are present inside Foundations:
 | **Spacing Scale** | Visual blocks for spacing values | 6+ blocks |
 | **Elevation** | Cards at different shadow levels | 4 shadow cards |
 | **Border Radius** | Rectangles showing each radius | 6 radius examples |
+| **Font Sizes** | 9 text samples at actual sizes (xs–5xl) | 9 samples |
+| **Font Weights** | Same text in each weight (thin–bold) | 6 weight samples |
+| **Semantic Colors** | Card swatches for success/warning/error/info | 4 status cards |
+| **Sizing** | Visual examples of icon/avatar/button/input sizes | 9+ size blocks |
+| **Shadows & Borders** | Shadow levels + border widths + opacity examples | 10+ examples |
+| **Letter Spacing** | Same text at each tracking value | 4 tracking samples |
 
 **Check for:**
 - Each documentation frame has a title text node
@@ -89,7 +95,7 @@ This returns only nodes with layout problems. Common issues:
 
 ### Check 4 — Token Audit (No Hardcoded Colors or Font Sizes)
 
-**Tool:** `search_all_unique_properties({ filePath, parents: [screenId1, screenId2, ...], properties: ["fillColor", "textColor", "fontSize"] })`
+**Tool:** `search_all_unique_properties({ filePath, parents: [screenId1, screenId2, ...], properties: ["fillColor", "textColor", "fontSize", "fontWeight", "letterSpacing", "strokeThickness"] })`
 
 **Expected result:** Only variable token references (starting with `$--`) should appear. For colors, any raw hex values (like `#8B4513`) indicate a leak. For font sizes, all values must match the `$--text-*` scale: 12, 14, 16, 18, 20, 24, 30, 36, 48.
 
@@ -237,6 +243,43 @@ U("textNodeId", { textGrowth: "fixed-width", width: "fill_container" })
 ```
 
 **Common locations:** Table header cells, table data cells, form field labels in horizontal layouts, breadcrumb text items.
+
+### Check 5e — Extended Token Verification
+
+**Purpose:** Verify the extended token categories (font weights, letter spacing, sizing, opacity, border widths) are correctly defined and used.
+
+**Tool:** `get_variables({ filePath })`
+
+**Check:** After reading variables, confirm these token categories exist with correct types:
+
+| Category | Count | Type | Tokens |
+|----------|-------|------|--------|
+| Font weights | 6 | `string` | `--weight-thin` ("200") through `--weight-bold` ("700") |
+| Letter spacing | 4 | `number` | `--tracking-tight` (-0.5) through `--tracking-wide` (1.5) |
+| Sizing | 9 | `number` | `--size-icon-sm` (16) through `--size-sidebar-width` (240) |
+| Opacity | 3 | `number` | `--opacity-disabled` (0.5), `--opacity-hover` (0.8), `--opacity-overlay` (0.6) |
+| Border widths | 3 | `number` | `--border-thin` (1), `--border-default` (1.5), `--border-thick` (2) |
+
+**Also verify in components:**
+- Button labels use `$--weight-semibold` (not hardcoded "600")
+- Heading text uses `$--weight-bold` (not hardcoded "700")
+- Input/card borders use `$--border-thin` (not hardcoded `1`)
+- Sidebar width uses `$--size-sidebar-width` (not hardcoded `240`)
+- Alert icons use `icon_font` type with Lucide icons (not unicode text characters)
+
+**Fix:** If any extended token is missing, add it via `set_variables`. If hardcoded values are found in components, update with `batch_design` using `U()`.
+
+### Check 5f — Icon Library Verification
+
+**Tool:** `batch_get({ filePath, patterns: [{ name: "Icon Library" }], searchDepth: 2 })`
+
+**Check:** The Icon Library frame exists inside Foundations with:
+- 6 category rows (Navigation, Action, Status, Social, Media, Misc)
+- 7 icons per category (42 total)
+- Each icon uses `icon_font` type with `iconFontFamily: "lucide"`
+- Each icon has a text label with its name
+
+**If missing:** Build using the Phase 4b specs in SKILL.md.
 
 ### Check 6 — Organization Audit
 
@@ -525,7 +568,7 @@ After all checks pass, present to the user:
 Run through before declaring the design system complete:
 
 - [ ] Canvas has 4 organized sections (Foundations → Components → Patterns → Screens)
-- [ ] Foundations has all 5 documentation frames with correct swatches/specimens
+- [ ] Foundations has all 11 documentation frames with correct swatches/specimens (incl. Font Sizes, Font Weights, Semantic Colors, Sizing, Shadows & Borders, Letter Spacing)
 - [ ] No orphan components at document root (all under Components section)
 - [ ] Components organized under category sub-frames with titles
 - [ ] All 4 pattern showcases present and using component refs
